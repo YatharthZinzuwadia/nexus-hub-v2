@@ -2,6 +2,10 @@
 
 @import "tailwindcss";
 
+body{
+  background-color: #000000;
+}
+
 :root {
   /* NexusHub Refactored - Professional Retro Programmer Aesthetic */
   --font-size: 16px;
