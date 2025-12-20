@@ -1,7 +1,8 @@
-
+"use client";
+import OnboardingWelcome from "@/app/components/screens/OnboardingWelcome";
 
 const OnboardingWelcomePage = ({}) => {
-  return <div></div>
-}
+  return <OnboardingWelcome onNext={() => {}} onSkip={() => {}} />;
+};
 
 export default OnboardingWelcomePage;
