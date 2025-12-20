@@ -1,8 +1,15 @@
 "use client";
+
 import OnboardingWelcome from "@/app/components/screens/OnboardingWelcome";
+import { useRouter } from "next/navigation";
 
-const OnboardingWelcomePage = ({}) => {
-  return <OnboardingWelcome onNext={() => {}} onSkip={() => {}} />;
-};
+export default function OnboardingWelcomePage() {
+  const router = useRouter();
 
-export default OnboardingWelcomePage;
+  return (
+    <OnboardingWelcome
+      onNext={() => router.push("/onboarding/features")}
+      onSkip={() => router.push("/login")}
+    />
+  );
+}
