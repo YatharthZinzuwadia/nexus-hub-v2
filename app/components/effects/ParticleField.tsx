@@ -92,15 +92,15 @@ const ParticleField = ({
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < 200) {
-            const force = (200 - distance) / 200;
+            const force = (350 - distance) / 200;
             particle.vx += (dx / distance) * force * 0.02;
             particle.vy += (dy / distance) * force * 0.02;
           }
         }
 
         // friction
-        particle.vx *= 0.95;
-        particle.vy *= 0.95;
+        particle.vx *= 0.99;
+        particle.vy *= 0.99;
 
         // Draw particle
         ctx.beginPath();
