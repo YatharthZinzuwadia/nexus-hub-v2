@@ -2,7 +2,7 @@
 
 @import "tailwindcss";
 
-body{
+body {
   background-color: #000000;
 }
 
@@ -245,7 +245,7 @@ body{
     rgba(255, 255, 255, 0.03) 50%,
     transparent 100%
   );
-  animation: scan 8s linear infinite;
+  animation: scan 5s linear infinite;
   pointer-events: none;
 }
 
