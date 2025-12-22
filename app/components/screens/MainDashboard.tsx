@@ -1,0 +1,632 @@
+import { motion } from "motion/react";
+import {
+  Search,
+  Bell,
+  ImageIcon,
+  Cpu,
+  Sparkles,
+  User,
+  Terminal,
+  Activity,
+  Settings,
+  FolderGit2,
+  Code2,
+  Zap,
+} from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { type LucideIcon } from "lucide-react";
+import ParticleField from "../effects/ParticleField";
+
+interface MainDashboardProps {
+  onNavigate: (screen: string) => void;
+}
+
+interface Module {
+  id: string;
+  icon: LucideIcon;
+  label: string;
+  screen: string;
+  status: "online" | "idle" | "processing";
+  description: string;
+  position: { x: number; y: number };
+}
+
+export function MainDashboard({ onNavigate }: MainDashboardProps) {
+  const [hoveredModule, setHoveredModule] = useState<string | null>(null);
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Update time
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Track mouse position
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setMousePosition({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  // Modules positioned like components on a motherboard
+  const modules: Module[] = [
+    {
+      id: "media",
+      icon: ImageIcon,
+      label: "Media Core",
+      screen: "media",
+      status: "online",
+      description: "STORAGE_MODULE",
+      position: { x: 15, y: 20 },
+    },
+    {
+      id: "ai",
+      icon: Sparkles,
+      label: "AI Processor",
+      screen: "ai",
+      status: "processing",
+      description: "NEURAL_UNIT",
+      position: { x: 50, y: 15 },
+    },
+    {
+      id: "projects",
+      icon: FolderGit2,
+      label: "Project Array",
+      screen: "projects",
+      status: "online",
+      description: "DATA_BANKS",
+      position: { x: 85, y: 25 },
+    },
+    {
+      id: "profile",
+      icon: User,
+      label: "User Interface",
+      screen: "profile",
+      status: "online",
+      description: "I/O_CONTROLLER",
+      position: { x: 20, y: 65 },
+    },
+    {
+      id: "design-system",
+      icon: Cpu,
+      label: "Design Engine",
+      screen: "design-system",
+      status: "online",
+      description: "RENDER_CORE",
+      position: { x: 80, y: 70 },
+    },
+    {
+      id: "settings",
+      icon: Settings,
+      label: "System Config",
+      screen: "settings",
+      status: "idle",
+      description: "BIOS_SETTINGS",
+      position: { x: 50, y: 75 },
+    },
+  ];
+
+  const quickStats = [
+    { label: "UPTIME", value: "99.9%", icon: Activity },
+    { label: "LATENCY", value: "<12ms", icon: Zap },
+    { label: "MODULES", value: "6/6", icon: Cpu },
+    { label: "STATUS", value: "NOMINAL", icon: Terminal },
+  ];
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full h-screen bg-[#000000] overflow-hidden"
+    >
+      {/* Circuit board background */}
+      {/* <CircuitBoard nodeCount={30} animated={true} /> */}
+
+      {/* Interactive particle field */}
+      <ParticleField density={70} interactive={true} connectionDistance={200} />
+
+      {/* Grid pattern */}
+      <div className="absolute inset-0 grid-pattern opacity-10" />
+
+      {/* Mouse follower effect */}
+      <motion.div
+        className="absolute w-64 h-64 bg-[#DC2626] rounded-full blur-3xl pointer-events-none"
+        animate={{
+          x: mousePosition.x - 128,
+          y: mousePosition.y - 128,
+        }}
+        transition={{ type: "spring", damping: 30, stiffness: 200 }}
+        style={{ opacity: 0.05 }}
+      />
+
+      {/* Header */}
+      <motion.div
+        className="relative z-10 border-b border-[#525252]/30 bg-[#0A0A0A]/90 backdrop-blur-xl"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, type: "spring" }}
+      >
+        <div className="max-w-400 mx-auto px-8 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo and title */}
+            <div className="flex items-center space-x-4">
+              <motion.div
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              >
+                <Terminal
+                  className="w-8 h-8 text-[#DC2626]"
+                  strokeWidth={1.5}
+                />
+              </motion.div>
+              <div>
+                <h1
+                  className="text-xl text-[#FFFFFF]"
+                  style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                >
+                  NEXUS<span className="text-[#DC2626]">HUB</span>
+                </h1>
+                <p
+                  className="text-xs text-[#525252]"
+                  style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                >
+                  MOTHERBOARD_CONTROL_CENTER
+                </p>
+              </div>
+            </div>
+
+            {/* Search and actions */}
+            <div className="flex items-center space-x-4">
+              <motion.div className="relative" whileHover={{ scale: 1.05 }}>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
+                <input
+                  type="text"
+                  placeholder="Search modules..."
+                  className="w-64 pl-10 pr-4 py-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#E5E5E5] placeholder-[#525252] focus:outline-none focus:border-[#DC2626] text-sm transition-all"
+                  style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                />
+              </motion.div>
+
+              <motion.button
+                className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors relative"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Bell className="w-5 h-5 text-[#A3A3A3]" strokeWidth={1.5} />
+                <motion.div
+                  className="absolute top-1 right-1 w-2 h-2 bg-[#DC2626] rounded-full"
+                  animate={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </motion.button>
+
+              <motion.button
+                onClick={() => onNavigate("profile")}
+                className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <User className="w-5 h-5 text-[#A3A3A3]" strokeWidth={1.5} />
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main content */}
+      <div className="relative z-10 max-w-400 mx-auto px-8 py-8 h-[calc(100vh-80px)] overflow-y-auto">
+        {/* Welcome section */}
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <motion.h2
+                className="text-3xl text-[#FFFFFF] mb-2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                Welcome Back,{" "}
+                <motion.span
+                  className="text-[#DC2626]"
+                  animate={{
+                    textShadow: [
+                      "0 0 10px rgba(220, 38, 38, 0.5)",
+                      "0 0 20px rgba(220, 38, 38, 0.8)",
+                      "0 0 10px rgba(220, 38, 38, 0.5)",
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  Developer
+                </motion.span>
+              </motion.h2>
+              <p className="text-[#A3A3A3]">
+                All systems operational. Motherboard initialized.
+              </p>
+            </div>
+            <div className="text-right">
+              <motion.div
+                className="text-2xl text-[#FFFFFF]"
+                style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                key={time}
+                initial={{ scale: 1.1 }}
+                animate={{ scale: 1 }}
+              >
+                {time}
+              </motion.div>
+              <div
+                className="text-sm text-[#A3A3A3]"
+                style={{ fontFamily: "IBM Plex Mono, monospace" }}
+              >
+                {new Date().toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+
+          {/* Quick stats */}
+          <div className="grid grid-cols-4 gap-4">
+            {quickStats.map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={stat.label}
+                  className="terminal-glass p-4 rounded-sm border border-[#525252]/20 relative overflow-hidden group hover:border-[#DC2626]/50 transition-all"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + i * 0.1 }}
+                  whileHover={{ y: -5, scale: 1.02 }}
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-[#DC2626] opacity-0 group-hover:opacity-10 transition-opacity"
+                    initial={false}
+                  />
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-2">
+                      <div
+                        className="text-xs text-[#A3A3A3]"
+                        style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                      >
+                        {stat.label}
+                      </div>
+                      <Icon
+                        className="w-4 h-4 text-[#DC2626]"
+                        strokeWidth={1.5}
+                      />
+                    </div>
+                    <div
+                      className="text-2xl text-[#FFFFFF]"
+                      style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                    >
+                      {stat.value}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* Motherboard-style module layout */}
+        <motion.div
+          className="mb-8 relative"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3
+              className="text-xl text-[#FFFFFF]"
+              style={{ fontFamily: "IBM Plex Mono, monospace" }}
+            >
+              HARDWARE_MODULES
+            </h3>
+            <div
+              className="flex items-center space-x-2 text-xs text-[#A3A3A3]"
+              style={{ fontFamily: "IBM Plex Mono, monospace" }}
+            >
+              <Activity className="w-4 h-4 text-[#22C55E]" />
+              <span>All circuits functional</span>
+            </div>
+          </div>
+
+          {/* Motherboard circuit board area */}
+          <div className="relative h-125 terminal-glass-strong rounded-sm border border-[#525252]/30 overflow-hidden">
+            {/* Circuit traces background pattern */}
+            <svg
+              className="absolute inset-0 w-full h-full opacity-20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <pattern
+                  id="circuit"
+                  x="0"
+                  y="0"
+                  width="100"
+                  height="100"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <line
+                    x1="0"
+                    y1="50"
+                    x2="100"
+                    y2="50"
+                    stroke="#525252"
+                    strokeWidth="1"
+                  />
+                  <line
+                    x1="50"
+                    y1="0"
+                    x2="50"
+                    y2="100"
+                    stroke="#525252"
+                    strokeWidth="1"
+                  />
+                  <circle cx="50" cy="50" r="3" fill="#525252" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#circuit)" />
+            </svg>
+
+            {/* Animated connection lines between modules */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {modules.map((module, i) => {
+                const nextModule = modules[(i + 1) % modules.length];
+                const x1 = `${module.position.x}%`;
+                const y1 = `${module.position.y}%`;
+                const x2 = `${nextModule.position.x}%`;
+                const y2 = `${nextModule.position.y}%`;
+
+                return (
+                  <g key={`connection-${i}`}>
+                    <motion.line
+                      x1={x1}
+                      y1={y1}
+                      x2={x2}
+                      y2={y2}
+                      stroke="#DC2626"
+                      strokeWidth="2"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: 0.3 }}
+                      transition={{ duration: 2, delay: i * 0.2 }}
+                    />
+                    {/* Data pulse animation */}
+                    <motion.circle
+                      r="4"
+                      fill="#DC2626"
+                      initial={{ offsetDistance: "0%" }}
+                      animate={{ offsetDistance: "100%" }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: i * 0.5,
+                        ease: "linear",
+                      }}
+                      style={{
+                        offsetPath: `path("M ${x1} ${y1} L ${x2} ${y2}")`,
+                        offsetDistance: "0%", // Important: also set initial in style for consistency
+                      }}
+                    />
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* Module components */}
+            {modules.map((module, index) => {
+              const Icon = module.icon;
+              return (
+                <motion.button
+                  key={module.id}
+                  onClick={() => onNavigate(module.screen)}
+                  onMouseEnter={() => setHoveredModule(module.id)}
+                  onMouseLeave={() => setHoveredModule(null)}
+                  className="absolute group"
+                  style={{
+                    left: `${module.position.x}%`,
+                    top: `${module.position.y}%`,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{
+                    duration: 0.8,
+                    delay: 0.7 + index * 0.1,
+                    type: "spring",
+                    stiffness: 200,
+                  }}
+                  whileHover={{ scale: 1.15, z: 50 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {/* Component outer glow */}
+                  <motion.div
+                    className="absolute -inset-8 bg-[#DC2626] rounded-full blur-xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: hoveredModule === module.id ? 0.4 : 0 }}
+                  />
+
+                  {/* Component body */}
+                  <div className="relative terminal-glass-strong p-6 rounded-sm border-2 border-[#525252]/30 group-hover:border-[#DC2626] transition-all duration-300">
+                    {/* Circuit pins */}
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex space-x-1">
+                      {[0, 1, 2].map((i) => (
+                        <div
+                          key={i}
+                          className="w-1 h-2 bg-[#737373] rounded-sm"
+                        />
+                      ))}
+                    </div>
+
+                    <motion.div
+                      animate={{
+                        rotate: hoveredModule === module.id ? 360 : 0,
+                      }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      <Icon
+                        className="w-8 h-8 text-[#DC2626] mb-2"
+                        strokeWidth={1.5}
+                      />
+                    </motion.div>
+
+                    <div
+                      className="text-xs text-[#FFFFFF] mb-1 whitespace-nowrap"
+                      style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                    >
+                      {module.label}
+                    </div>
+                    <div
+                      className="text-[10px] text-[#525252] mb-2"
+                      style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                    >
+                      {module.description}
+                    </div>
+
+                    {/* Status LED */}
+                    <div className="flex items-center justify-center space-x-1">
+                      <motion.div
+                        className={`w-2 h-2 rounded-full ${
+                          module.status === "online"
+                            ? "bg-[#22C55E]"
+                            : module.status === "processing"
+                            ? "bg-[#F59E0B]"
+                            : "bg-[#737373]"
+                        }`}
+                        animate={{
+                          scale: module.status !== "idle" ? [1, 1.3, 1] : 1,
+                          opacity: module.status !== "idle" ? [1, 0.5, 1] : 1,
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    </div>
+
+                    {/* Circuit pins bottom */}
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
+                      {[0, 1, 2].map((i) => (
+                        <div
+                          key={i}
+                          className="w-1 h-2 bg-[#737373] rounded-sm"
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tooltip */}
+                  <motion.div
+                    className="absolute -bottom-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#DC2626] text-[#FFFFFF] text-xs rounded-sm whitespace-nowrap"
+                    style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{
+                      opacity: hoveredModule === module.id ? 1 : 0,
+                      y: hoveredModule === module.id ? 0 : -10,
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    LAUNCH_{module.screen.toUpperCase()}
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#DC2626] rotate-45" />
+                  </motion.div>
+                </motion.button>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* System log */}
+        <motion.div
+          className="terminal-glass-strong rounded-sm border border-[#525252]/30 overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+        >
+          <div className="px-6 py-4 bg-[#0A0A0A] border-b border-[#525252]/30 flex items-center justify-between">
+            <h3
+              className="text-sm text-[#FFFFFF]"
+              style={{ fontFamily: "IBM Plex Mono, monospace" }}
+            >
+              SYSTEM_LOG
+            </h3>
+            <Code2 className="w-4 h-4 text-[#525252]" />
+          </div>
+          <div
+            className="p-6 space-y-3"
+            style={{ fontFamily: "IBM Plex Mono, monospace" }}
+          >
+            {[
+              {
+                time: "14:32:18",
+                action: "Neural processor initialized",
+                status: "success",
+              },
+              {
+                time: "14:31:55",
+                action: "Circuit board mapped successfully",
+                status: "success",
+              },
+              {
+                time: "14:31:42",
+                action: "All modules responding",
+                status: "success",
+              },
+              {
+                time: "14:31:28",
+                action: "Particle field activated",
+                status: "processing",
+              },
+            ].map((log, i) => (
+              <motion.div
+                key={i}
+                className="flex items-start space-x-3 text-sm"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.2 + i * 0.1 }}
+              >
+                <span className="text-[#525252] w-20 shrink-0">{log.time}</span>
+                <div
+                  className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                    log.status === "success"
+                      ? "bg-[#22C55E]"
+                      : "bg-[#F59E0B] animate-pulse"
+                  }`}
+                />
+                <span className="text-[#E5E5E5]">{log.action}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Footer quote */}
+        <motion.div
+          className="mt-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+        >
+          <p
+            className="text-[#525252] text-xs"
+            style={{ fontFamily: "IBM Plex Mono, monospace" }}
+          >
+            &quot;The motherboard is the soul of the machine&quot; — Anonymous
+          </p>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
