@@ -1,8 +1,9 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import ParticleField from "../effects/ParticleField";
 import { Cpu, Database, Terminal, Zap } from "lucide-react";
-import { motion, easeOut } from "motion/react";
+import { motion, easeOut } from "framer-motion";
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -121,24 +122,24 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
       <ParticleField density={400} interactive={true} />
 
       {/* Grid background */}
-      <div className="absolute inste-0 grid-pattern opacity-20">HELLO</div>
+      <div className="absolute inset-0 grid-pattern opacity-20" />
 
-      {/* Animated scanlines */}
-      <div className="absolute inset-0 scan-effect" />
+      {/* Scanlines */}
+      <div className="absolute inset-0 scan-effect pointer-events-none" />
 
-      {/* Radial gradient overlay */}
+      {/* Radial overlay */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%)",
+            "radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.85) 100%)",
         }}
       />
 
-      <div className="relative z-10 max-w-2xl w-full px-8">
-        {/* Logo/Header with refined animation */}
+      <div className="relative z-10 w-full max-w-4xl px-6 sm:px-10 md:px-12">
+        {/* Logo/Header */}
         <motion.div
-          className="flex items-center justify-center mb-12 space-x-4"
+          className="flex flex-col sm:flex-row items-center justify-center mb-10 sm:mb-16 gap-4"
           variants={headerContainer}
           initial="hidden"
           animate="visible"
@@ -146,22 +147,22 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           {/* Icon + liquid glow */}
           <div className="relative">
             <motion.div
-              className="absolute inset-0 blur-2xl bg-[#DC2626]"
+              className="absolute inset-0 blur-2xl bg-[#DC2626] opacity-70"
               variants={headerBlob}
             />
             <motion.div variants={headerIcon} className="relative z-10">
               <Terminal
-                className="w-16 h-16 text-[#DC2626]"
+                className="w-14 h-14 sm:w-16 sm:h-16 text-[#DC2626]"
                 strokeWidth={1.5}
               />
             </motion.div>
           </div>
 
           {/* Text block */}
-          <div>
+          <div className="text-center sm:text-left">
             <motion.h1
               variants={headerText}
-              className={`text-5xl tracking-[0.25em] text-[#FFFFFF] font-semibold ${
+              className={`text-4xl sm:text-5xl tracking-[0.25em] text-white font-semibold ${
                 glitchActive ? "glitch-text" : ""
               }`}
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
@@ -170,7 +171,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
             </motion.h1>
             <motion.p
               variants={headerText}
-              className="text-[#A3A3A3] text-sm mt-1"
+              className="text-[#A3A3A3] text-xs sm:text-sm mt-1"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               v2.1.0 • Build 20251213 • AI-Enhanced
@@ -178,9 +179,9 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           </div>
         </motion.div>
 
-        {/* System icons animation */}
+        {/* System icons */}
         <motion.div
-          className="flex justify-center space-x-8 mb-8"
+          className="flex justify-center space-x-6 sm:space-x-8 mb-10 sm:mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
@@ -222,7 +223,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
 
         {/* Boot messages terminal */}
         <motion.div
-          className="terminal-glass rounded-sm p-6 mb-8 min-h-60 border border-[#525252]/30 relative overflow-hidden"
+          className="terminal-glass rounded-sm p-5 sm:p-6 mb-8 min-h-45 sm:min-h-55 border border-[#525252]/30 relative overflow-hidden"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
@@ -241,7 +242,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           </div>
 
           <div
-            className="space-y-2"
+            className="space-y-2 text-sm"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
           >
             {bootMessages.map((message, index) => (
@@ -250,7 +251,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
-                className="text-[#E5E5E5] text-sm flex items-start"
+                className="text-[#E5E5E5] flex items-start"
               >
                 <motion.span
                   className="text-[#DC2626] mr-2"
@@ -279,7 +280,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           transition={{ duration: 0.5, delay: 0.7 }}
         >
           <div
-            className="flex justify-between items-center text-sm"
+            className="flex justify-between items-center text-xs sm:text-sm"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
           >
             <span className="text-[#A3A3A3]">System initialization</span>
@@ -322,7 +323,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           </div>
         </motion.div>
 
-        {/* Footer easter egg */}
+        {/* Footer quote */}
         <motion.div
           className="mt-8 text-center"
           initial={{ opacity: 0 }}

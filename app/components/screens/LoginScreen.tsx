@@ -18,29 +18,26 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
     onLogin();
   };
   return (
-    <div className="relative w-full min-h-screen bg-black flex justify-center items-center py-6">
+    <div className="relative w-full min-h-screen bg-black flex items-center justify-center py-8 md:py-0 overflow-hidden">
       {/* Particle effect */}
       <ParticleField density={200} />
-
       {/* Grid pattern background */}
       <div className="absolute inset-0 grid-pattern opacity-20" />
-
       {/* Scanline effect */}
       <div className="absolute inset-0 scan-effect" />
-
       {/* Content */}
-      <div className="relative z-10 max-w-5xl w-full px-8">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Left side - Branding */}
-          <div className="space-y-6">
-            <div className="flex items-center space-x-3">
+      <div className="relative z-10 w-full max-w-5xl px-6 sm:px-8">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+          {/* LEFT - Branding */}
+          <div className="space-y-8 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start space-x-3">
               <Terminal
                 className="w-12 h-12 text-[#DC2626]"
                 strokeWidth={1.5}
               />
               <div>
                 <h1
-                  className="text-4xl tracking-tight text-[#FFFFFF]"
+                  className="text-4xl tracking-tight text-white"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   NEXUS<span className="text-[#DC2626]">HUB</span>
@@ -55,7 +52,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-3xl text-[#FFFFFF]">
+              <h2 className="text-3xl text-white">
                 Access <span className="text-[#DC2626]">Terminal</span>
               </h2>
               <p className="text-[#A3A3A3] leading-relaxed">
@@ -65,7 +62,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
             </div>
 
             {/* Terminal-style info box */}
-            <div className="terminal-glass-strong rounded-sm overflow-hidden border border-[#525252]/30">
+            <div className="terminal-glass-strong rounded-sm overflow-hidden border border-[#525252]/30 max-w-md mx-auto md:mx-0">
               <div className="px-4 py-2 bg-[#0A0A0A] border-b border-[#525252]/30">
                 <span
                   className="text-[#A3A3A3] text-xs"
@@ -98,7 +95,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
           </div>
 
           {/* Right side - Login form */}
-          <div className="terminal-glass p-8 rounded-sm border border-[#525252]/30">
+          <div className="terminal-glass p-6 sm:p-8 rounded-sm border border-[#525252]/30">
             <div className="mb-6">
               <div className="inline-flex items-center space-x-2 px-3 py-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm mb-4">
                 <div className="w-2 h-2 rounded-full bg-[#DC2626] animate-pulse" />
@@ -109,7 +106,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                   SECURE LOGIN
                 </span>
               </div>
-              <h3 className="text-2xl text-[#FFFFFF] mb-2">Sign In</h3>
+              <h3 className="text-2xl text-white mb-2">Sign In</h3>
               <p className="text-[#A3A3A3] text-sm">
                 Enter your credentials to continue
               </p>
@@ -165,7 +162,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               </div>
 
               {/* Remember me & forgot password */}
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex flex-col sm:flex-row items-center justify-between text-sm gap-4">
                 <label className="flex items-center space-x-2 text-[#A3A3A3] cursor-pointer">
                   <input
                     type="checkbox"
@@ -187,7 +184,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               {/* Submit button */}
               <button
                 type="submit"
-                className="group w-full flex items-center justify-center space-x-2 px-6 py-3 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all duration-200 border border-[#DC2626]"
+                className="group w-full flex items-center justify-center space-x-2 px-6 py-3 bg-[#DC2626] text-white rounded-sm hover:bg-[#EF4444] transition-all border border-[#DC2626]"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 <span>Access System</span>
@@ -195,7 +192,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               </button>
 
               {/* Divider */}
-              <div className="relative">
+              <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-[#525252]/30" />
                 </div>
@@ -212,7 +209,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               {/* Alternative login */}
               <button
                 type="button"
-                className="w-full px-6 py-3 bg-transparent text-[#A3A3A3] rounded-sm hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-all duration-200 border border-[#525252]/30"
+                className="w-full px-6 py-3 bg-transparent text-[#A3A3A3] rounded-sm hover:text-white hover:bg-[#1A1A1A] transition-all border border-[#525252]/30"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 Sign in with SSH Key
