@@ -1,3 +1,10 @@
+/**
+ * TODO : Main circuit board change to actual graphic 3d motherboard model.
+ * might need 3d libraries and graphics software to create the model.
+ * improve animations of the elements.
+ *
+ */
+
 import { motion } from "motion/react";
 import {
   Search,
