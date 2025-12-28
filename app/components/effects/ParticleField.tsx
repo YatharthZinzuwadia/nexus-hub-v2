@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 
 interface Particle {
   x: number;
@@ -26,6 +26,7 @@ const ParticleField = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: 0, y: 0 });
+  const animationFrameRef = useRef<number | undefined>(undefined);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -40,18 +41,11 @@ const ParticleField = ({
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  // Memoize particle initialization to avoid recreating on every render
+  const initialParticles = useMemo(() => {
+    if (dimensions.width === 0 || dimensions.height === 0) return [];
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
-
-    // particles init
-    particlesRef.current = Array.from({ length: density }, () => ({
+    return Array.from({ length: density }, () => ({
       x: Math.random() * dimensions.width,
       y: Math.random() * dimensions.height,
       vx: (Math.random() - 0.5) * 0.5,
@@ -60,6 +54,20 @@ const ParticleField = ({
       opacity: Math.random() * 0.5 + 0.3,
       color: color,
     }));
+  }, [dimensions.width, dimensions.height, density, color]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    canvas.width = dimensions.width;
+    canvas.height = dimensions.height;
+
+    // Initialize particles from memoized value
+    particlesRef.current = initialParticles;
 
     // mouse move handler
     const handleMouseMove = (e: MouseEvent) => {
@@ -70,29 +78,38 @@ const ParticleField = ({
       window.addEventListener("mousemove", handleMouseMove);
     }
 
-    // animation loop
-    let animationFrameId: number;
+    // animation loop with optimizations
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      const particles = particlesRef.current;
+      const particleCount = particles.length;
+
       // Update and draw particles
-      particlesRef.current.forEach((particle, i) => {
+      for (let i = 0; i < particleCount; i++) {
+        const particle = particles[i];
+
         // update pos
         particle.x += particle.vx;
         particle.y += particle.vy;
 
         // bounce off edges
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -2.5;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -2.5;
+        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
 
         // Interactive: Attract to mouse
         if (interactive) {
           const dx = mouseRef.current.x - particle.x;
           const dy = mouseRef.current.y - particle.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distanceSquared = dx * dx + dy * dy;
+          const interactionDistance = 200;
+          const interactionDistanceSquared =
+            interactionDistance * interactionDistance;
 
-          if (distance < 200) {
-            const force = (350 - distance) / 200;
+          if (distanceSquared < interactionDistanceSquared) {
+            const distance = Math.sqrt(distanceSquared);
+            const force =
+              (interactionDistance - distance) / interactionDistance;
             particle.vx += (dx / distance) * force * 0.02;
             particle.vy += (dy / distance) * force * 0.02;
           }
@@ -109,41 +126,50 @@ const ParticleField = ({
         ctx.globalAlpha = particle.opacity;
         ctx.fill();
 
-        // Draw connections
-        particlesRef.current.slice(i + 1).forEach((other) => {
+        // Draw connections - optimized with early exit
+        const connectionDistanceSquared =
+          connectionDistance * connectionDistance;
+        for (let j = i + 1; j < particleCount; j++) {
+          const other = particles[j];
           const dx = particle.x - other.x;
           const dy = particle.y - other.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distanceSquared = dx * dx + dy * dy;
 
-          if (distance < connectionDistance) {
-            ctx.beginPath();
-            ctx.moveTo(particle.x, particle.y);
-            ctx.lineTo(other.x, other.y);
-            ctx.strokeStyle = particle.color;
-            ctx.globalAlpha = (1 - distance / connectionDistance) * 0.15;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        });
-      });
+          // Early exit if too far
+          if (distanceSquared > connectionDistanceSquared) continue;
+
+          const distance = Math.sqrt(distanceSquared);
+          ctx.beginPath();
+          ctx.moveTo(particle.x, particle.y);
+          ctx.lineTo(other.x, other.y);
+          ctx.strokeStyle = particle.color;
+          ctx.globalAlpha = (1 - distance / connectionDistance) * 0.15;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+
       ctx.globalAlpha = 1;
-      animationFrameId = requestAnimationFrame(animate);
+      animationFrameRef.current = requestAnimationFrame(animate);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
       if (interactive) {
         window.removeEventListener("mousemove", handleMouseMove);
       }
     };
-  }, [dimensions, density, color, interactive, connectionDistance]);
+  }, [dimensions, initialParticles, interactive, connectionDistance]);
 
   return (
     <canvas
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none opacity-60"
+      style={{ willChange: "transform" }}
     />
   );
 };

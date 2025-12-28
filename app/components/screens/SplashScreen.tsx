@@ -119,7 +119,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   return (
     <div className="relative w-full h-screen bg-black flex items-center justify-center">
       {/* Particle field */}
-      <ParticleField density={400} interactive={true} />
+      <ParticleField density={300} interactive={true} />
 
       {/* Grid background */}
       <div className="absolute inset-0 grid-pattern opacity-20" />
