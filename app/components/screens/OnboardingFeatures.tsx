@@ -197,7 +197,6 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
       <motion.div
         className="relative z-10 max-w-6xl w-full h-full py-6 px-8 bg-black"
         variants={pageVariants}
-        initial="hidden"
         animate="visible"
       >
         {/* HEADER */}
