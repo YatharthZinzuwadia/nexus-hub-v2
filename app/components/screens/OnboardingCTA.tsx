@@ -121,7 +121,7 @@ const OnboardingCTA = ({ onSignIn }: OnboardingCTAProps) => {
 
       {/* Content */}
       <motion.div
-        className="relative z-10 max-w-4xl w-full px-8 text-center"
+        className="relative z-10 max-w-4xl w-full px-4 sm:px-8 text-center"
         variants={pageVariants}
         initial="hidden"
         animate="visible"
@@ -142,7 +142,7 @@ const OnboardingCTA = ({ onSignIn }: OnboardingCTAProps) => {
 
         {/* Main heading */}
         <motion.h1
-          className="text-6xl md:text-7xl tracking-tight text-[#FFFFFF] mb-6 leading-[1.1]"
+          className="text-4xl sm:text-6xl md:text-7xl tracking-tight text-[#FFFFFF] mb-6 leading-[1.1]"
           variants={headingVariants}
         >
           Your Journey
@@ -162,7 +162,7 @@ const OnboardingCTA = ({ onSignIn }: OnboardingCTAProps) => {
         {/* CTA Button */}
         <motion.button
           onClick={onSignIn}
-          className="group inline-flex items-center space-x-3 px-8 py-4 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all duration-200 border border-[#DC2626] mb-12"
+          className="group w-full md:w-auto inline-flex justify-center items-center space-x-3 px-8 py-4 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all duration-200 border border-[#DC2626] mb-12"
           style={{ fontFamily: "IBM Plex Mono, monospace" }}
           variants={buttonVariants}
           whileHover={{ scale: 1.05 }}
@@ -174,7 +174,7 @@ const OnboardingCTA = ({ onSignIn }: OnboardingCTAProps) => {
 
         {/* Social proof / Stats */}
         <motion.div
-          className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto"
           variants={statsGridVariants}
         >
           <motion.div
