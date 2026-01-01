@@ -127,10 +127,10 @@ export function AIStudio({ onNavigate }: AIStudioProps) {
       <ParticleField density={50} color="#DC2626" />
 
       {/* Carbon fiber texture on sides */}
-      <div className="absolute left-0 top-0 bottom-0 w-32">
+      <div className="hidden md:block absolute left-0 top-0 bottom-0 w-32">
         <CarbonFiber opacity={0.3} />
       </div>
-      <div className="absolute right-0 top-0 bottom-0 w-32">
+      <div className="hidden md:block absolute right-0 top-0 bottom-0 w-32">
         <CarbonFiber opacity={0.3} />
       </div>
 
@@ -176,7 +176,7 @@ export function AIStudio({ onNavigate }: AIStudioProps) {
         animate={{ y: 0 }}
         transition={{ type: "spring", duration: 0.8 }}
       >
-        <div className="max-w-[1600px] mx-auto px-8 py-4">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <motion.button
@@ -226,7 +226,7 @@ export function AIStudio({ onNavigate }: AIStudioProps) {
               </motion.div>
 
               {/* System metrics */}
-              <div className="flex items-center space-x-3">
+              <div className="hidden md:flex items-center space-x-3">
                 {[
                   { label: "CPU", value: cpuUsage },
                   { label: "MEM", value: memoryUsage },
@@ -270,8 +270,8 @@ export function AIStudio({ onNavigate }: AIStudioProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="max-w-[1600px] mx-auto px-8 py-3">
-          <div className="grid grid-cols-4 gap-4">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {aiCapabilities.map((cap, i) => {
               const Icon = cap.icon;
               return (
@@ -310,7 +310,7 @@ export function AIStudio({ onNavigate }: AIStudioProps) {
 
       {/* Chat messages */}
       <div className="relative z-10 flex-1 overflow-y-auto text-white">
-        <div className="max-w-[1000px] mx-auto px-8 py-8 space-y-6">
+        <div className="max-w-[1000px] mx-auto px-4 md:px-8 py-8 space-y-6">
           {messages.map((message, index) => (
             <motion.div
               key={message.id}
@@ -512,7 +512,7 @@ export function AIStudio({ onNavigate }: AIStudioProps) {
         animate={{ y: 0 }}
         transition={{ type: "spring", duration: 0.8 }}
       >
-        <div className="max-w-[1000px] mx-auto px-8 py-4">
+        <div className="max-w-[1000px] mx-auto px-4 md:px-8 py-4">
           <div className="flex items-end space-x-4">
             <motion.div
               className="flex-1 terminal-glass-strong rounded-sm border border-[#525252]/30 focus-within:border-[#DC2626] transition-colors overflow-hidden"
@@ -522,7 +522,7 @@ export function AIStudio({ onNavigate }: AIStudioProps) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything... (Shift+Enter for new line)"
+                placeholder="Ask me anything..."
                 className="w-full px-4 py-3 bg-transparent text-[#E5E5E5] placeholder-[#525252] focus:outline-none resize-none"
                 style={{
                   fontFamily: "IBM Plex Mono, monospace",

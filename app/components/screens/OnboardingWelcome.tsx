@@ -213,7 +213,7 @@ const OnboardingWelcome = ({ onNext, onSkip }: OnboardingWelcomeProps) => {
 
       {/* Main content container, animated as a unit via pageVariants */}
       <motion.div
-        className="relative z-10 max-w-6xl w-full px-8"
+        className="relative z-10 max-w-6xl w-full px-4 sm:px-8"
         variants={pageVariants}
         initial="hidden"
         animate="visible"
@@ -243,7 +243,7 @@ const OnboardingWelcome = ({ onNext, onSkip }: OnboardingWelcomeProps) => {
             <div>
               {/* Hero title: "Welcome to the Developer Portal" */}
               <motion.h1
-                className="text-6xl tracking-tight text-[#FFFFFF] mb-4 leading-[1.1]"
+                className="text-4xl sm:text-5xl md:text-6xl tracking-tight text-[#FFFFFF] mb-4 leading-[1.1]"
                 variants={headlineVariants}
               >
                 Welcome to the
@@ -276,7 +276,7 @@ const OnboardingWelcome = ({ onNext, onSkip }: OnboardingWelcomeProps) => {
             </div>
 
             {/* Tech stats row: components, uptime, response */}
-            <div className="grid grid-cols-3 gap-4 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
               {[
                 { Icon: Code2, value: "50+", label: "Components" },
                 { Icon: Database, value: "99.9%", label: "Uptime" },
@@ -342,13 +342,13 @@ const OnboardingWelcome = ({ onNext, onSkip }: OnboardingWelcomeProps) => {
 
             {/* CTA buttons row */}
             <motion.div
-              className="flex items-center space-x-4 pt-4"
+              className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 pt-4"
               variants={ctaRowVariants}
             >
               {/* Primary CTA: Begin tour */}
               <motion.button
                 onClick={onNext}
-                className="group flex items-center space-x-2 px-8 py-4 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all duration-200 border border-[#DC2626] relative overflow-hidden"
+                className="group w-full md:w-auto flex items-center justify-center space-x-2 px-8 py-4 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all duration-200 border border-[#DC2626] relative overflow-hidden"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 whileHover={{ scale: 1.05 }} // subtle zoom on hover
                 whileTap={{ scale: 0.95 }} // pressed state feedback
@@ -367,7 +367,7 @@ const OnboardingWelcome = ({ onNext, onSkip }: OnboardingWelcomeProps) => {
               {/* Secondary CTA: Skip intro */}
               <motion.button
                 onClick={onSkip}
-                className="px-8 py-4 bg-transparent text-[#A3A3A3] rounded-sm hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-all duration-200 border border-[#525252]/30 hover:border-[#DC2626]/50"
+                className="w-full md:w-auto px-8 py-4 bg-transparent text-[#A3A3A3] rounded-sm hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-all duration-200 border border-[#525252]/30 hover:border-[#DC2626]/50"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

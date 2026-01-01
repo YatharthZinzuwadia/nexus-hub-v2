@@ -195,7 +195,7 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
 
       {/* Main animated container */}
       <motion.div
-        className="relative z-10 max-w-6xl w-full h-full py-6 px-8 bg-black"
+        className="relative z-10 max-w-6xl w-full h-full py-6 px-4 sm:px-8 bg-black"
         variants={pageVariants}
         animate="visible"
       >
@@ -221,7 +221,7 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
 
           {/* Title */}
           <motion.h2
-            className="text-5xl tracking-tight text-[#FFFFFF] mb-4"
+            className="text-3xl md:text-5xl tracking-tight text-[#FFFFFF] mb-4"
             variants={titleVariants}
           >
             Built for <span className="text-[#DC2626]">Developers</span>
@@ -371,12 +371,12 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
 
         {/* NAVIGATION BUTTONS */}
         <motion.div
-          className="flex items-center justify-center space-x-4 mt-12"
+          className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 mt-12"
           variants={navRowVariants}
         >
           <motion.button
             onClick={onSkip}
-            className="px-6 py-3 bg-transparent text-[#A3A3A3] rounded-sm hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-all duration-200 border border-[#525252]/30"
+            className="w-full md:w-auto px-6 py-3 bg-transparent text-[#A3A3A3] rounded-sm hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-all duration-200 border border-[#525252]/30"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
@@ -385,7 +385,7 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
           </motion.button>
           <motion.button
             onClick={onNext}
-            className="group flex items-center space-x-2 px-6 py-3 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all duration-200 border border-[#DC2626]"
+            className="group w-full md:w-auto flex items-center justify-center space-x-2 px-6 py-3 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all duration-200 border border-[#DC2626]"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.96 }}

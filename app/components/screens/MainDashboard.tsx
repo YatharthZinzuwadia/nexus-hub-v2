@@ -165,8 +165,8 @@ export function MainDashboard({ onNavigate }: MainDashboardProps) {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, type: "spring" }}
       >
-        <div className="max-w-400 mx-auto px-8 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-400 mx-auto px-4 md:px-8 py-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0">
             {/* Logo and title */}
             <div className="flex items-center space-x-4">
               <motion.div
@@ -195,45 +195,50 @@ export function MainDashboard({ onNavigate }: MainDashboardProps) {
             </div>
 
             {/* Search and actions */}
-            <div className="flex items-center space-x-4">
-              <motion.div className="relative" whileHover={{ scale: 1.05 }}>
+            <div className="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
+              <motion.div
+                className="relative flex-1 md:flex-none"
+                whileHover={{ scale: 1.05 }}
+              >
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
                 <input
                   type="text"
                   placeholder="Search modules..."
-                  className="w-64 pl-10 pr-4 py-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#E5E5E5] placeholder-[#525252] focus:outline-none focus:border-[#DC2626] text-sm transition-all"
+                  className="w-full md:w-64 pl-10 pr-4 py-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#E5E5E5] placeholder-[#525252] focus:outline-none focus:border-[#DC2626] text-sm transition-all"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 />
               </motion.div>
 
-              <motion.button
-                className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors relative"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <Bell className="w-5 h-5 text-[#A3A3A3]" strokeWidth={1.5} />
-                <motion.div
-                  className="absolute top-1 right-1 w-2 h-2 bg-[#DC2626] rounded-full"
-                  animate={{ scale: [1, 1.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </motion.button>
+              <div className="flex space-x-4">
+                <motion.button
+                  className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors relative"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <Bell className="w-5 h-5 text-[#A3A3A3]" strokeWidth={1.5} />
+                  <motion.div
+                    className="absolute top-1 right-1 w-2 h-2 bg-[#DC2626] rounded-full"
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.button>
 
-              <motion.button
-                onClick={() => onNavigate("profile")}
-                className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <User className="w-5 h-5 text-[#A3A3A3]" strokeWidth={1.5} />
-              </motion.button>
+                <motion.button
+                  onClick={() => onNavigate("profile")}
+                  className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <User className="w-5 h-5 text-[#A3A3A3]" strokeWidth={1.5} />
+                </motion.button>
+              </div>
             </div>
           </div>
         </div>
       </motion.div>
 
       {/* Main content */}
-      <div className="relative z-10 max-w-400 mx-auto px-8 py-8 h-[calc(100vh-80px)] overflow-y-auto">
+      <div className="relative z-10 max-w-400 mx-auto px-4 md:px-8 py-8 h-[calc(100vh-80px)] overflow-y-auto">
         {/* Welcome section */}
         <motion.div
           className="mb-8"
@@ -287,7 +292,7 @@ export function MainDashboard({ onNavigate }: MainDashboardProps) {
           </div>
 
           {/* Quick stats */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {quickStats.map((stat, i) => {
               const Icon = stat.icon;
               return (
@@ -352,8 +357,8 @@ export function MainDashboard({ onNavigate }: MainDashboardProps) {
             </div>
           </div>
 
-          {/* Motherboard circuit board area */}
-          <div className="relative h-125 terminal-glass-strong rounded-sm border border-[#525252]/30 overflow-hidden">
+          {/* Motherboard circuit board area - Desktop Only */}
+          <div className="relative h-125 terminal-glass-strong rounded-sm border border-[#525252]/30 overflow-hidden hidden md:block">
             {/* Circuit traces background pattern */}
             <svg
               className="absolute inset-0 w-full h-full opacity-20"
@@ -550,6 +555,55 @@ export function MainDashboard({ onNavigate }: MainDashboardProps) {
                     LAUNCH_{module.screen.toUpperCase()}
                     <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#DC2626] rotate-45" />
                   </motion.div>
+                </motion.button>
+              );
+            })}
+          </div>
+
+          {/* Mobile Grid View (Hidden on Desktop) */}
+          <div className="grid grid-cols-2 gap-4 md:hidden">
+            {modules.map((module, index) => {
+              const Icon = module.icon;
+              return (
+                <motion.button
+                  key={module.id}
+                  onClick={() => onNavigate(module.screen)}
+                  className="relative p-4 terminal-glass rounded-sm border border-[#525252]/30 hover:border-[#DC2626] transition-all text-left group overflow-hidden"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <motion.div className="absolute -right-4 -top-4 w-12 h-12 bg-[#DC2626] rounded-full blur-xl opacity-0 group-hover:opacity-20 transition-opacity" />
+
+                  <div className="flex justify-between items-start mb-3">
+                    <Icon
+                      className="w-6 h-6 text-[#DC2626]"
+                      strokeWidth={1.5}
+                    />
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        module.status === "online"
+                          ? "bg-[#22C55E]"
+                          : module.status === "processing"
+                          ? "bg-[#F59E0B]"
+                          : "bg-[#737373]"
+                      }`}
+                    />
+                  </div>
+
+                  <div
+                    className="text-sm text-white font-medium mb-1"
+                    style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                  >
+                    {module.label}
+                  </div>
+                  <div
+                    className="text-[10px] text-[#737373]"
+                    style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                  >
+                    {module.description}
+                  </div>
                 </motion.button>
               );
             })}
