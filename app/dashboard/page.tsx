@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { MainDashboard } from "../components/screens/MainDashboard";
 import PageTransition from "../components/effects/PageTransition";
+import MainDashboard from "../components/screens/MainDashboard";
 
 const DashboardPage = ({}) => {
   const router = useRouter();

@@ -31,7 +31,7 @@ interface Project {
   gradient: string;
 }
 
-export function ProjectsScreen({ onNavigate }: ProjectsScreenProps) {
+const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "active" | "archived">("all");
 
@@ -407,4 +407,6 @@ export function ProjectsScreen({ onNavigate }: ProjectsScreenProps) {
       </div>
     </div>
   );
-}
+};
+
+export default ProjectsScreen;

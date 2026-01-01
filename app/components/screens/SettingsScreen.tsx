@@ -15,7 +15,7 @@ interface SettingsScreenProps {
   onNavigate: (screen: string) => void;
 }
 
-export function SettingsScreen({ onNavigate }: SettingsScreenProps) {
+const SettingsScreen = ({ onNavigate }: SettingsScreenProps) => {
   const [notifications, setNotifications] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
   const [twoFactor, setTwoFactor] = useState(false);
@@ -346,4 +346,6 @@ export function SettingsScreen({ onNavigate }: SettingsScreenProps) {
       </div>
     </div>
   );
-}
+};
+
+export default SettingsScreen;

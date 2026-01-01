@@ -26,7 +26,7 @@ interface Message {
   timestamp: Date;
 }
 
-export function AIStudio({ onNavigate }: AIStudioProps) {
+const AIStudio = ({ onNavigate }: AIStudioProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -567,4 +567,6 @@ export function AIStudio({ onNavigate }: AIStudioProps) {
       </motion.div>
     </div>
   );
-}
+};
+
+export default AIStudio;

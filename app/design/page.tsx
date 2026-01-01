@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import SettingsScreen from "../components/screens/SettingsScreen";
+import DesignSystemHub from "../components/screens/DesignSystemHub";
 
-export default function SettingsPage() {
+export default function DesignSystemPage() {
   const router = useRouter();
 
   const handleNavigate = (screen: string) => {
     router.push(`/${screen}`);
   };
 
-  return <SettingsScreen onNavigate={handleNavigate} />;
+  return <DesignSystemHub onNavigate={handleNavigate} />;
 }

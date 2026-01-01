@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AIStudio } from "../components/screens/AIStudio";
+import AIStudio from "../components/screens/AIStudio";
 
 export default function AIPage() {
   const router = useRouter();
