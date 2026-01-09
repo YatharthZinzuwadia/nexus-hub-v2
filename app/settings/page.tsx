@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import AIStudio from "../components/screens/AIStudio";
+import SettingsScreen from "../components/screens/SettingsScreen";
 
-export default function AIPage() {
+export default function SettingsPage() {
   const router = useRouter();
 
   const handleNavigate = (screen: string) => {
     router.push(`/${screen}`);
   };
 
-  return <AIStudio onNavigate={handleNavigate} />;
+  return <SettingsScreen onNavigate={handleNavigate} />;
 }

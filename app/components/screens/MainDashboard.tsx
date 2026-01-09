@@ -38,7 +38,7 @@ interface Module {
   position: { x: number; y: number };
 }
 
-export function MainDashboard({ onNavigate }: MainDashboardProps) {
+const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
   const [hoveredModule, setHoveredModule] = useState<string | null>(null);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -110,7 +110,7 @@ export function MainDashboard({ onNavigate }: MainDashboardProps) {
       id: "design-system",
       icon: Cpu,
       label: "Design Engine",
-      screen: "design-system",
+      screen: "design",
       status: "online",
       description: "RENDER_CORE",
       position: { x: 80, y: 70 },
@@ -690,4 +690,6 @@ export function MainDashboard({ onNavigate }: MainDashboardProps) {
       </div>
     </div>
   );
-}
+};
+
+export default MainDashboard;
