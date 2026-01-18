@@ -117,7 +117,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   }, [onComplete]);
 
   return (
-    <div className="relative w-full h-screen bg-black flex items-center justify-center">
+    <div className="relative w-full h-screen bg-background flex items-center justify-center">
       {/* Particle field */}
       <ParticleField density={300} interactive={true} />
 
@@ -132,7 +132,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.85) 100%)",
+            "radial-gradient(circle at center, transparent 0%, var(--background) 100%)",
         }}
       />
 
@@ -147,12 +147,12 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           {/* Icon + liquid glow */}
           <div className="relative">
             <motion.div
-              className="absolute inset-0 blur-2xl bg-[#DC2626] opacity-70"
+              className="absolute inset-0 blur-2xl bg-primary opacity-70"
               variants={headerBlob}
             />
             <motion.div variants={headerIcon} className="relative z-10">
               <Terminal
-                className="w-14 h-14 sm:w-16 sm:h-16 text-[#DC2626]"
+                className="w-14 h-14 sm:w-16 sm:h-16 text-primary"
                 strokeWidth={1.5}
               />
             </motion.div>
@@ -162,16 +162,16 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           <div className="text-center sm:text-left">
             <motion.h1
               variants={headerText}
-              className={`text-4xl sm:text-5xl tracking-[0.25em] text-white font-semibold ${
+              className={`text-4xl sm:text-5xl tracking-[0.25em] text-foreground font-semibold ${
                 glitchActive ? "glitch-text" : ""
               }`}
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
-              NEXUS<span className="text-[#DC2626]">HUB</span>
+              NEXUS<span className="text-primary">HUB</span>
             </motion.h1>
             <motion.p
               variants={headerText}
-              className="text-[#A3A3A3] text-xs sm:text-sm mt-1"
+              className="text-muted-foreground text-xs sm:text-sm mt-1"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               v2.1.0 • Build 20251213 • AI-Enhanced
@@ -213,9 +213,9 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
                   delay: i * 0.2,
                   ease: "easeInOut",
                 }}
-                className="p-3 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm"
+                className="p-3 bg-secondary border border-border/30 rounded-sm"
               >
-                <Icon className="w-6 h-6 text-[#DC2626]" strokeWidth={1.5} />
+                <Icon className="w-6 h-6 text-primary" strokeWidth={1.5} />
               </motion.div>
             </motion.div>
           ))}
@@ -223,18 +223,18 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
 
         {/* Boot messages terminal */}
         <motion.div
-          className="terminal-glass rounded-sm p-5 sm:p-6 mb-8 min-h-45 sm:min-h-55 border border-[#525252]/30 relative overflow-hidden"
+          className="terminal-glass rounded-sm p-5 sm:p-6 mb-8 min-h-45 sm:min-h-55 border border-border/30 relative overflow-hidden"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           {/* Terminal header */}
-          <div className="flex items-center space-x-2 mb-4 pb-3 border-b border-[#525252]/20">
-            <div className="w-3 h-3 rounded-full bg-[#DC2626]" />
-            <div className="w-3 h-3 rounded-full bg-[#F59E0B]" />
-            <div className="w-3 h-3 rounded-full bg-[#22C55E]" />
+          <div className="flex items-center space-x-2 mb-4 pb-3 border-b border-border/20">
+            <div className="w-3 h-3 rounded-full bg-destructive" />
+            <div className="w-3 h-3 rounded-full bg-warning" />
+            <div className="w-3 h-3 rounded-full bg-success" />
             <span
-              className="text-[#525252] text-xs ml-2"
+              className="text-muted-foreground text-xs ml-2"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               system.log
@@ -251,10 +251,10 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
-                className="text-[#E5E5E5] flex items-start"
+                className="text-foreground flex items-start"
               >
                 <motion.span
-                  className="text-[#DC2626] mr-2"
+                  className="text-primary mr-2"
                   animate={{ opacity: [1, 0.5, 1] }}
                   transition={{ duration: 1, repeat: Infinity }}
                 >
@@ -264,8 +264,8 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
               </motion.div>
             ))}
             {bootMessages.length < bootSequence.length && (
-              <div className="flex items-center text-[#E5E5E5] text-sm">
-                <span className="text-[#DC2626] mr-2">▸</span>
+              <div className="flex items-center text-foreground text-sm">
+                <span className="text-primary mr-2">▸</span>
                 <span className="cursor-blink">_</span>
               </div>
             )}
@@ -283,9 +283,9 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
             className="flex justify-between items-center text-xs sm:text-sm"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
           >
-            <span className="text-[#A3A3A3]">System initialization</span>
+            <span className="text-muted-foreground">System initialization</span>
             <motion.span
-              className="text-[#DC2626]"
+              className="text-primary"
               key={Math.floor(progress / 10)}
               initial={{ scale: 1.2 }}
               animate={{ scale: 1 }}
@@ -293,9 +293,9 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
               {Math.floor(progress)}%
             </motion.span>
           </div>
-          <div className="w-full h-2 bg-[#1A1A1A] rounded-none overflow-hidden border border-[#525252]/20 relative">
+          <div className="w-full h-2 bg-secondary rounded-none overflow-hidden border border-border/20 relative">
             <motion.div
-              className="h-full bg-linear-to-r from-[#DC2626] via-[#EF4444] to-[#DC2626] relative"
+              className="h-full bg-linear-to-r from-destructive via-primary to-destructive relative"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.3 }}
@@ -331,11 +331,10 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           transition={{ duration: 1, delay: 1.5 }}
         >
           <p
-            className="text-[#525252] text-xs"
+            className="text-muted-foreground text-xs"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
           >
-            &quot;In the beginning was the command line&ldquot; — Neal
-            Stephenson
+            &quot;In the beginning was the command line&quot; — Neal Stephenson
           </p>
         </motion.div>
       </div>

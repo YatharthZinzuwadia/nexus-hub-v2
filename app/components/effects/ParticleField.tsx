@@ -28,6 +28,31 @@ const ParticleField = ({
   const mouseRef = useRef({ x: 0, y: 0 });
   const animationFrameRef = useRef<number | undefined>(undefined);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [dynamicColor, setDynamicColor] = useState(color);
+
+  useEffect(() => {
+    // Function to get CSS variable value
+    const getThemeColor = () => {
+      if (typeof window === "undefined") return color;
+      const docStyle = getComputedStyle(document.documentElement);
+      const primaryVar = docStyle.getPropertyValue("--primary").trim();
+      return primaryVar || color;
+    };
+
+    setDynamicColor(getThemeColor());
+
+    // Optional: Observe theme changes if you have a class change on html/body
+    const observer = new MutationObserver(() => {
+      setDynamicColor(getThemeColor());
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme", "class", "style"],
+    });
+
+    return () => observer.disconnect();
+  }, [color]);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -52,9 +77,9 @@ const ParticleField = ({
       vy: (Math.random() - 0.5) * 0.5,
       size: Math.random() * 2 + 1,
       opacity: Math.random() * 0.5 + 0.3,
-      color: color,
+      color: dynamicColor,
     }));
-  }, [dimensions.width, dimensions.height, density, color]);
+  }, [dimensions.width, dimensions.height, density, dynamicColor]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

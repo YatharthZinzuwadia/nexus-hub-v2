@@ -22,7 +22,7 @@ const PageTransition = ({ children, transitionKey }: PageTransitionProps) => {
       >
         {/* Red line sweep transition effect */}
         <motion.div
-          className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-[#DC2626] to-transparent z-50 pointer-events-none"
+          className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-primary to-transparent z-50 pointer-events-none"
           initial={{ x: "-100%", opacity: 0 }}
           animate={{ x: "100vw", opacity: [0, 1, 1, 0] }}
           transition={{
@@ -31,8 +31,7 @@ const PageTransition = ({ children, transitionKey }: PageTransitionProps) => {
             times: [0, 0.1, 0.9, 1],
           }}
           style={{
-            boxShadow:
-              "0 0 20px rgba(220, 38, 38, 0.8), 0 0 40px rgba(220, 38, 38, 0.4)",
+            boxShadow: "0 0 20px var(--primary), 0 0 40px var(--primary)",
           }}
         />
 

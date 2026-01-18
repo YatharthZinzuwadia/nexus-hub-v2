@@ -21,36 +21,36 @@ export const CarbonFiber = ({
             patternUnits="userSpaceOnUse"
           >
             {/* Carbon fiber weave pattern */}
-            <rect width="20" height="20" fill="#0A0A0A" />
+            <rect width="20" height="20" fill="var(--card)" />
             <path
               d="M0,10 Q5,8 10,10 T20,10"
               fill="none"
-              stroke="#1A1A1A"
+              stroke="var(--muted)"
               strokeWidth="2"
             />
             <path
               d="M0,10 Q5,12 10,10 T20,10"
               fill="none"
-              stroke="#0A0A0A"
+              stroke="var(--card)"
               strokeWidth="1"
             />
             <path
               d="M10,0 Q8,5 10,10 T10,20"
               fill="none"
-              stroke="#1A1A1A"
+              stroke="var(--muted)"
               strokeWidth="2"
             />
             <path
               d="M10,0 Q12,5 10,10 T10,20"
               fill="none"
-              stroke="#0A0A0A"
+              stroke="var(--card)"
               strokeWidth="1"
             />
           </pattern>
 
           <radialGradient id="carbon-shine">
-            <stop offset="0%" stopColor="#262626" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#0A0A0A" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--secondary)" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="var(--card)" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -86,7 +86,7 @@ export const HexPattern = ({
             <path
               d="M30,0 L50,15 L50,35 L30,50 L10,35 L10,15 Z"
               fill="none"
-              stroke="#525252"
+              stroke="var(--border)"
               strokeWidth="0.5"
             />
           </pattern>
@@ -97,4 +97,3 @@ export const HexPattern = ({
     </div>
   );
 };
-

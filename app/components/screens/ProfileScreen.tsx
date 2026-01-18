@@ -171,33 +171,33 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-[#000000] overflow-hidden">
+    <div className="relative w-full h-screen bg-background overflow-hidden">
       {/* Grid pattern background */}
       <div className="absolute inset-0 grid-pattern opacity-20" />
 
       {/* Header */}
-      <div className="relative z-10 border-b border-[#525252]/30 bg-[#0A0A0A]/80 backdrop-blur-xl">
+      <div className="relative z-10 border-b border-border/30 bg-background/80 backdrop-blur-xl">
         <div className="max-w-[1600px] mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => onNavigate("dashboard")}
-                className="p-2 hover:bg-[#1A1A1A] rounded-sm transition-colors"
+                className="p-2 hover:bg-secondary rounded-sm transition-colors"
               >
                 <ArrowLeft
-                  className="w-5 h-5 text-[#A3A3A3]"
+                  className="w-5 h-5 text-muted-foreground"
                   strokeWidth={1.5}
                 />
               </button>
               <div>
                 <h1
-                  className="text-xl text-[#FFFFFF]"
+                  className="text-xl text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   USER_PROFILE
                 </h1>
                 <p
-                  className="text-xs text-[#525252]"
+                  className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   DEVELOPER_CREDENTIALS
@@ -207,7 +207,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
 
             <button
               onClick={toggleEdit}
-              className="flex items-center space-x-2 px-4 py-2 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all"
+              className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-all"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               <Edit className="w-4 h-4" />
@@ -223,9 +223,9 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
           {/* Left sidebar - Profile card */}
           <div className="space-y-6">
             {/* Avatar and basic info */}
-            <div className="terminal-glass-strong p-6 rounded-sm border border-[#525252]/30 text-center">
-              <div className="w-24 h-24 mx-auto mb-4 bg-[#0A0A0A] border-2 border-[#DC2626] rounded-sm flex items-center justify-center">
-                <User className="w-12 h-12 text-[#DC2626]" strokeWidth={1.5} />
+            <div className="terminal-glass-strong p-6 rounded-sm border border-border/30 text-center">
+              <div className="w-24 h-24 mx-auto mb-4 bg-secondary border-2 border-primary rounded-sm flex items-center justify-center">
+                <User className="w-12 h-12 text-primary" strokeWidth={1.5} />
               </div>
 
               {isEditing ? (
@@ -236,7 +236,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                     onChange={(e) =>
                       handleProfileChange("name", e.target.value)
                     }
-                    className="w-full mb-2 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-3 py-2 text-[#FFFFFF] text-center text-lg"
+                    className="w-full mb-2 bg-input border border-border/40 rounded-sm px-3 py-2 text-foreground text-center text-lg"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   />
                   <input
@@ -245,17 +245,17 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                     onChange={(e) =>
                       handleProfileChange("handle", e.target.value)
                     }
-                    className="w-full mb-4 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-3 py-1 text-[#A3A3A3] text-center text-sm"
+                    className="w-full mb-4 bg-input border border-border/40 rounded-sm px-3 py-1 text-muted-foreground text-center text-sm"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   />
                 </>
               ) : (
                 <>
-                  <h2 className="text-2xl text-[#FFFFFF] mb-1">
+                  <h2 className="text-2xl text-foreground mb-1">
                     {profile.name}
                   </h2>
                   <p
-                    className="text-sm text-[#A3A3A3] mb-4"
+                    className="text-sm text-muted-foreground mb-4"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     {profile.handle}
@@ -263,10 +263,10 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                 </>
               )}
 
-              <div className="inline-flex items-center space-x-2 px-3 py-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm mb-4">
-                <Shield className="w-3 h-3 text-[#22C55E]" />
+              <div className="inline-flex items-center space-x-2 px-3 py-1 bg-secondary border border-border/30 rounded-sm mb-4">
+                <Shield className="w-3 h-3 text-success" />
                 <span
-                  className="text-xs text-[#A3A3A3]"
+                  className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   VERIFIED
@@ -277,27 +277,27 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                 <textarea
                   value={profile.bio}
                   onChange={(e) => handleProfileChange("bio", e.target.value)}
-                  className="w-full bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-3 py-2 text-sm text-[#A3A3A3] leading-relaxed"
+                  className="w-full bg-input border border-border/40 rounded-sm px-3 py-2 text-sm text-muted-foreground leading-relaxed"
                   rows={3}
                 />
               ) : (
-                <p className="text-sm text-[#A3A3A3] leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {profile.bio}
                 </p>
               )}
             </div>
 
             {/* Contact info */}
-            <div className="terminal-glass-strong p-6 rounded-sm border border-[#525252]/30">
+            <div className="terminal-glass-strong p-6 rounded-sm border border-border/30">
               <h3
-                className="text-sm text-[#FFFFFF] mb-4"
+                className="text-sm text-foreground mb-4"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 CONTACT_INFO
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center space-x-3">
-                  <Mail className="w-4 h-4 text-[#DC2626]" strokeWidth={1.5} />
+                  <Mail className="w-4 h-4 text-primary" strokeWidth={1.5} />
                   {isEditing ? (
                     <input
                       type="email"
@@ -305,17 +305,16 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                       onChange={(e) =>
                         handleProfileChange("email", e.target.value)
                       }
-                      className="flex-1 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-2 py-1 text-[#A3A3A3]"
+                      className="flex-1 bg-input border border-border/40 rounded-sm px-2 py-1 text-muted-foreground"
                     />
                   ) : (
-                    <span className="text-[#A3A3A3]">{profile.email}</span>
+                    <span className="text-muted-foreground">
+                      {profile.email}
+                    </span>
                   )}
                 </div>
                 <div className="flex items-center space-x-3">
-                  <MapPin
-                    className="w-4 h-4 text-[#DC2626]"
-                    strokeWidth={1.5}
-                  />
+                  <MapPin className="w-4 h-4 text-primary" strokeWidth={1.5} />
                   {isEditing ? (
                     <input
                       type="text"
@@ -323,14 +322,16 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                       onChange={(e) =>
                         handleProfileChange("location", e.target.value)
                       }
-                      className="flex-1 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-2 py-1 text-[#A3A3A3]"
+                      className="flex-1 bg-input border border-border/40 rounded-sm px-2 py-1 text-muted-foreground"
                     />
                   ) : (
-                    <span className="text-[#A3A3A3]">{profile.location}</span>
+                    <span className="text-muted-foreground">
+                      {profile.location}
+                    </span>
                   )}
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Code className="w-4 h-4 text-[#DC2626]" strokeWidth={1.5} />
+                  <Code className="w-4 h-4 text-primary" strokeWidth={1.5} />
                   {isEditing ? (
                     <input
                       type="text"
@@ -338,19 +339,21 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                       onChange={(e) =>
                         handleProfileChange("role", e.target.value)
                       }
-                      className="flex-1 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-2 py-1 text-[#A3A3A3]"
+                      className="flex-1 bg-input border border-border/40 rounded-sm px-2 py-1 text-muted-foreground"
                     />
                   ) : (
-                    <span className="text-[#A3A3A3]">{profile.role}</span>
+                    <span className="text-muted-foreground">
+                      {profile.role}
+                    </span>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Social links (keep static for now) */}
-            <div className="terminal-glass-strong p-6 rounded-sm border border-[#525252]/30">
+            <div className="terminal-glass-strong p-6 rounded-sm border border-border/30">
               <h3
-                className="text-sm text-[#FFFFFF] mb-4"
+                className="text-sm text-foreground mb-4"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 SOCIAL_LINKS
@@ -358,19 +361,19 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
               <div className="space-y-2">
                 <a
                   href="#"
-                  className="flex items-center justify-between p-3 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors group"
+                  className="flex items-center justify-between p-3 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors group"
                 >
                   <div className="flex items-center space-x-3">
                     <Github
-                      className="w-4 h-4 text-[#A3A3A3] group-hover:text-[#FFFFFF]"
+                      className="w-4 h-4 text-muted-foreground group-hover:text-foreground"
                       strokeWidth={1.5}
                     />
-                    <span className="text-sm text-[#A3A3A3] group-hover:text-[#FFFFFF]">
+                    <span className="text-sm text-muted-foreground group-hover:text-foreground">
                       GitHub
                     </span>
                   </div>
                   <span
-                    className="text-xs text-[#525252]"
+                    className="text-xs text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     →
@@ -378,19 +381,19 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                 </a>
                 <a
                   href="#"
-                  className="flex items-center justify-between p-3 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors group"
+                  className="flex items-center justify-between p-3 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors group"
                 >
                   <div className="flex items-center space-x-3">
                     <Linkedin
-                      className="w-4 h-4 text-[#A3A3A3] group-hover:text-[#FFFFFF]"
+                      className="w-4 h-4 text-muted-foreground group-hover:text-foreground"
                       strokeWidth={1.5}
                     />
-                    <span className="text-sm text-[#A3A3A3] group-hover:text-[#FFFFFF]">
+                    <span className="text-sm text-muted-foreground group-hover:text-foreground">
                       LinkedIn
                     </span>
                   </div>
                   <span
-                    className="text-xs text-[#525252]"
+                    className="text-xs text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     →
@@ -398,19 +401,19 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                 </a>
                 <a
                   href="#"
-                  className="flex items-center justify-between p-3 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors group"
+                  className="flex items-center justify-between p-3 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors group"
                 >
                   <div className="flex items-center space-x-3">
                     <Twitter
-                      className="w-4 h-4 text-[#A3A3A3] group-hover:text-[#FFFFFF]"
+                      className="w-4 h-4 text-muted-foreground group-hover:text-foreground"
                       strokeWidth={1.5}
                     />
-                    <span className="text-sm text-[#A3A3A3] group-hover:text-[#FFFFFF]">
+                    <span className="text-sm text-muted-foreground group-hover:text-foreground">
                       Twitter
                     </span>
                   </div>
                   <span
-                    className="text-xs text-[#525252]"
+                    className="text-xs text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     →
@@ -423,10 +426,10 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
           {/* Right content - Stats and activity */}
           <div className="md:col-span-2 space-y-6">
             {/* Stats grid */}
-            <div className="terminal-glass-strong p-4 rounded-sm border border-[#525252]/30">
+            <div className="terminal-glass-strong p-4 rounded-sm border border-border/30">
               <div className="flex items-center justify-between mb-4">
                 <h3
-                  className="text-sm text-[#FFFFFF]"
+                  className="text-sm text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   METRICS
@@ -434,7 +437,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                 {isEditing && (
                   <button
                     onClick={handleAddStat}
-                    className="flex items-center space-x-1 text-xs px-2 py-1 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm text-[#A3A3A3] hover:border-[#DC2626]/60 hover:text-[#FFFFFF] transition-colors"
+                    className="flex items-center space-x-1 text-xs px-2 py-1 bg-secondary border border-border/40 rounded-sm text-muted-foreground hover:border-primary/60 hover:text-foreground transition-colors"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add Stat</span>
@@ -446,14 +449,14 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                 {stats.map((stat, index) => (
                   <div
                     key={stat.label + index}
-                    className="terminal-glass p-4 rounded-sm border border-[#525252]/20 text-center relative"
+                    className="terminal-glass p-4 rounded-sm border border-border/20 text-center relative"
                   >
                     {isEditing && (
                       <button
                         onClick={() => handleRemoveStat(index)}
-                        className="absolute top-2 right-2 p-1 rounded-sm hover:bg-[#1A1A1A]"
+                        className="absolute top-2 right-2 p-1 rounded-sm hover:bg-secondary"
                       >
-                        <X className="w-3 h-3 text-[#525252]" />
+                        <X className="w-3 h-3 text-muted-foreground" />
                       </button>
                     )}
 
@@ -465,7 +468,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                           onChange={(e) =>
                             handleStatChange(index, "value", e.target.value)
                           }
-                          className="w-full text-center mb-2 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-2 py-1 text-[#FFFFFF] text-lg"
+                          className="w-full text-center mb-2 bg-input border border-border/40 rounded-sm px-2 py-1 text-foreground text-lg"
                           style={{ fontFamily: "IBM Plex Mono, monospace" }}
                         />
                         <input
@@ -474,18 +477,18 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                           onChange={(e) =>
                             handleStatChange(index, "label", e.target.value)
                           }
-                          className="w-full text-center bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-2 py-1 text-xs text-[#A3A3A3]"
+                          className="w-full text-center bg-input border border-border/40 rounded-sm px-2 py-1 text-xs text-muted-foreground"
                         />
                       </>
                     ) : (
                       <>
                         <div
-                          className="text-3xl text-[#FFFFFF] mb-2"
+                          className="text-3xl text-foreground mb-2"
                           style={{ fontFamily: "IBM Plex Mono, monospace" }}
                         >
                           {stat.value}
                         </div>
-                        <div className="text-xs text-[#A3A3A3]">
+                        <div className="text-xs text-muted-foreground">
                           {stat.label}
                         </div>
                       </>
@@ -496,9 +499,9 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
             </div>
 
             {/* Skills */}
-            <div className="terminal-glass-strong p-6 rounded-sm border border-[#525252]/30">
+            <div className="terminal-glass-strong p-6 rounded-sm border border-border/30">
               <h3
-                className="text-lg text-[#FFFFFF] mb-4"
+                className="text-lg text-foreground mb-4"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 TECH_STACK
@@ -507,7 +510,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                 {skills.map((skill) => (
                   <span
                     key={skill}
-                    className="inline-flex items-center gap-2 px-3 py-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-sm text-[#A3A3A3] hover:border-[#DC2626]/50 hover:text-[#FFFFFF] transition-all"
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-secondary border border-border/30 rounded-sm text-sm text-muted-foreground hover:border-primary/50 hover:text-foreground transition-all"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     {skill}
@@ -516,7 +519,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                         onClick={() => handleRemoveSkill(skill)}
                         className="ml-1"
                       >
-                        <X className="w-3 h-3 text-[#525252]" />
+                        <X className="w-3 h-3 text-muted-foreground" />
                       </button>
                     )}
                   </span>
@@ -533,12 +536,12 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                     value={newSkill}
                     onChange={(e) => setNewSkill(e.target.value)}
                     placeholder="Add new skill"
-                    className="flex-1 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-3 py-2 text-sm text-[#A3A3A3]"
+                    className="flex-1 bg-input border border-border/40 rounded-sm px-3 py-2 text-sm text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   />
                   <button
                     type="submit"
-                    className="flex items-center gap-1 px-3 py-2 bg-[#DC2626] text-xs text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-colors"
+                    className="flex items-center gap-1 px-3 py-2 bg-primary text-xs text-primary-foreground rounded-sm hover:bg-destructive transition-colors"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add</span>
@@ -548,26 +551,23 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
             </div>
 
             {/* Recent activity */}
-            <div className="terminal-glass-strong p-6 rounded-sm border border-[#525252]/30">
+            <div className="terminal-glass-strong p-6 rounded-sm border border-border/30">
               <div className="flex items-center justify-between mb-4">
                 <h3
-                  className="text-lg text-[#FFFFFF]"
+                  className="text-lg text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   RECENT_ACTIVITY
                 </h3>
-                <Activity
-                  className="w-5 h-5 text-[#DC2626]"
-                  strokeWidth={1.5}
-                />
+                <Activity className="w-5 h-5 text-primary" strokeWidth={1.5} />
               </div>
               <div className="space-y-4">
                 {activities.map((activity, i) => (
                   <div
                     key={i}
-                    className="flex items-start space-x-4 pb-4 border-b border-[#525252]/20 last:border-0 last:pb-0"
+                    className="flex items-start space-x-4 pb-4 border-b border-border/20 last:border-0 last:pb-0"
                   >
-                    <div className="w-2 h-2 rounded-full bg-[#DC2626] mt-2 shrink-0" />
+                    <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
                     <div className="flex-1">
                       {isEditing ? (
                         <>
@@ -577,7 +577,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                             onChange={(e) =>
                               handleActivityChange(i, "action", e.target.value)
                             }
-                            className="w-full mb-2 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-2 py-1 text-sm text-[#E5E5E5]"
+                            className="w-full mb-2 bg-input border border-border/40 rounded-sm px-2 py-1 text-sm text-foreground"
                           />
                           <div className="flex items-center space-x-2 text-xs mb-1">
                             <input
@@ -586,7 +586,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                               onChange={(e) =>
                                 handleActivityChange(i, "repo", e.target.value)
                               }
-                              className="px-2 py-1 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm text-[#A3A3A3] flex-1"
+                              className="px-2 py-1 bg-input border border-border/40 rounded-sm text-muted-foreground flex-1"
                               style={{
                                 fontFamily: "IBM Plex Mono, monospace",
                               }}
@@ -597,7 +597,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                               onChange={(e) =>
                                 handleActivityChange(i, "time", e.target.value)
                               }
-                              className="px-2 py-1 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm text-[#525252] flex-1"
+                              className="px-2 py-1 bg-input border border-border/40 rounded-sm text-muted-foreground flex-1"
                               style={{
                                 fontFamily: "IBM Plex Mono, monospace",
                               }}
@@ -606,12 +606,12 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                         </>
                       ) : (
                         <>
-                          <p className="text-sm text-[#E5E5E5] mb-1">
+                          <p className="text-sm text-foreground mb-1">
                             {activity.action}
                           </p>
                           <div className="flex items-center space-x-2 text-xs">
                             <span
-                              className="px-2 py-0.5 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#A3A3A3]"
+                              className="px-2 py-0.5 bg-secondary border border-border/30 rounded-sm text-muted-foreground"
                               style={{
                                 fontFamily: "IBM Plex Mono, monospace",
                               }}
@@ -619,7 +619,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                               {activity.repo}
                             </span>
                             <span
-                              className="text-[#525252]"
+                              className="text-muted-foreground"
                               style={{
                                 fontFamily: "IBM Plex Mono, monospace",
                               }}
@@ -634,9 +634,9 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                     {isEditing && (
                       <button
                         onClick={() => handleRemoveActivity(i)}
-                        className="mt-1 p-1 rounded-sm hover:bg-[#1A1A1A]"
+                        className="mt-1 p-1 rounded-sm hover:bg-secondary"
                       >
-                        <X className="w-3 h-3 text-[#525252]" />
+                        <X className="w-3 h-3 text-muted-foreground" />
                       </button>
                     )}
                   </div>
@@ -646,10 +646,10 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
               {isEditing && (
                 <form
                   onSubmit={handleAddActivity}
-                  className="mt-4 space-y-2 border-t border-[#525252]/30 pt-4"
+                  className="mt-4 space-y-2 border-t border-border/30 pt-4"
                 >
                   <p
-                    className="text-xs text-[#525252]"
+                    className="text-xs text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     ADD_ACTIVITY
@@ -664,7 +664,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                         action: e.target.value,
                       }))
                     }
-                    className="w-full bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-3 py-2 text-sm text-[#A3A3A3]"
+                    className="w-full bg-input border border-border/40 rounded-sm px-3 py-2 text-sm text-muted-foreground"
                   />
                   <div className="flex gap-2">
                     <input
@@ -677,7 +677,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                           repo: e.target.value,
                         }))
                       }
-                      className="flex-1 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-3 py-2 text-sm text-[#A3A3A3]"
+                      className="flex-1 bg-input border border-border/40 rounded-sm px-3 py-2 text-sm text-muted-foreground"
                     />
                     <input
                       type="text"
@@ -689,12 +689,12 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                           time: e.target.value,
                         }))
                       }
-                      className="flex-1 bg-[#0A0A0A] border border-[#525252]/40 rounded-sm px-3 py-2 text-sm text-[#A3A3A3]"
+                      className="flex-1 bg-input border border-border/40 rounded-sm px-3 py-2 text-sm text-muted-foreground"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-1 px-3 py-2 bg-[#DC2626] text-xs text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-2 bg-primary text-xs text-primary-foreground rounded-sm hover:bg-destructive transition-colors"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add Activity</span>
@@ -704,9 +704,9 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
             </div>
 
             {/* Terminal-style footer */}
-            <div className="terminal-glass-strong p-4 rounded-sm border border-[#525252]/30">
+            <div className="terminal-glass-strong p-4 rounded-sm border border-border/30">
               <p
-                className="text-xs text-[#525252]"
+                className="text-xs text-muted-foreground"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 // "The best way to predict the future is to invent it." — Alan

@@ -121,7 +121,7 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
   );
 
   return (
-    <div className="relative w-full h-screen bg-[#000000] overflow-hidden flex flex-col">
+    <div className="relative w-full h-screen bg-background overflow-hidden flex flex-col">
       {/* Particle field */}
       <ParticleField density={40} />
 
@@ -132,30 +132,30 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
       <div className="absolute inset-0 grid-pattern opacity-15" />
 
       {/* Header */}
-      <div className="relative z-10 border-b border-[#525252]/30 bg-[#0A0A0A]/90 backdrop-blur-xl shrink-0">
+      <div className="relative z-10 border-b border-border/30 bg-background/90 backdrop-blur-xl shrink-0">
         <div className="max-w-[1800px] mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <motion.button
                 onClick={() => onNavigate("dashboard")}
-                className="p-2 hover:bg-[#1A1A1A] rounded-sm transition-colors"
+                className="p-2 hover:bg-secondary rounded-sm transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <ArrowLeft
-                  className="w-5 h-5 text-[#A3A3A3]"
+                  className="w-5 h-5 text-muted-foreground"
                   strokeWidth={1.5}
                 />
               </motion.button>
               <div>
                 <h1
-                  className="text-xl text-[#FFFFFF]"
+                  className="text-xl text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   PROJECT_REPOSITORY
                 </h1>
                 <p
-                  className="text-xs text-[#525252]"
+                  className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   ~/developer/projects
@@ -171,8 +171,8 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
                   onClick={() => setFilter(f)}
                   className={`px-4 py-2 rounded-sm text-sm transition-all ${
                     filter === f
-                      ? "bg-[#DC2626] text-[#FFFFFF]"
-                      : "bg-[#0A0A0A] text-[#A3A3A3] hover:text-[#FFFFFF] border border-[#525252]/30"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground hover:text-foreground border border-border/30"
                   }`}
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   whileHover={{ scale: 1.05 }}
@@ -214,19 +214,19 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
-                className="terminal-glass p-4 rounded-sm border border-[#525252]/20"
+                className="terminal-glass p-4 rounded-sm border border-border/20"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
               >
                 <div
-                  className="text-xs text-[#A3A3A3] mb-1"
+                  className="text-xs text-muted-foreground mb-1"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   {stat.label}
                 </div>
                 <div
-                  className="text-2xl text-[#FFFFFF]"
+                  className="text-2xl text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   {stat.value}
@@ -250,13 +250,13 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
                   onMouseLeave={() => setHoveredProject(null)}
                   whileHover={{ y: -8 }}
                 >
-                  <div className="terminal-glass-strong rounded-sm border border-[#525252]/30 overflow-hidden h-full flex flex-col group-hover:border-[#DC2626]/50 transition-all duration-300">
+                  <div className="terminal-glass-strong rounded-sm border border-border/30 overflow-hidden h-full flex flex-col group-hover:border-primary/50 transition-all duration-300">
                     {/* Card header with gradient */}
                     <div
                       className={`relative p-6 bg-gradient-to-br ${project.gradient} overflow-hidden`}
                     >
                       <motion.div
-                        className="absolute inset-0 bg-black"
+                        className="absolute inset-0 bg-background"
                         initial={{ opacity: 0.5 }}
                         whileHover={{ opacity: 0.3 }}
                       />
@@ -284,17 +284,17 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
                           transition={{ duration: 0.6 }}
                         >
                           <Icon
-                            className="w-8 h-8 text-[#FFFFFF]"
+                            className="w-8 h-8 text-primary-foreground"
                             strokeWidth={1.5}
                           />
                         </motion.div>
                         <div
-                          className={`px-2 py-1 bg-[#000000]/50 rounded-sm text-xs ${
+                          className={`px-2 py-1 bg-black/50 rounded-sm text-xs ${
                             project.status === "active"
-                              ? "text-[#22C55E]"
+                              ? "text-green-500"
                               : project.status === "wip"
-                              ? "text-[#F59E0B]"
-                              : "text-[#737373]"
+                              ? "text-yellow-500"
+                              : "text-muted-foreground"
                           }`}
                           style={{ fontFamily: "IBM Plex Mono, monospace" }}
                         >
@@ -306,12 +306,12 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
                     {/* Card body */}
                     <div className="p-6 flex-1 flex flex-col">
                       <h3
-                        className="text-xl text-[#FFFFFF] mb-2"
+                        className="text-xl text-foreground mb-2"
                         style={{ fontFamily: "IBM Plex Mono, monospace" }}
                       >
                         {project.title}
                       </h3>
-                      <p className="text-sm text-[#A3A3A3] mb-4 leading-relaxed flex-1">
+                      <p className="text-sm text-muted-foreground mb-4 leading-relaxed flex-1">
                         {project.description}
                       </p>
 
@@ -320,7 +320,7 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
                         {project.tags.map((tag) => (
                           <motion.span
                             key={tag}
-                            className="px-2 py-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-xs text-[#A3A3A3]"
+                            className="px-2 py-1 bg-secondary border border-border/30 rounded-sm text-xs text-muted-foreground"
                             style={{ fontFamily: "IBM Plex Mono, monospace" }}
                             whileHover={{
                               scale: 1.05,
@@ -333,9 +333,9 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
                       </div>
 
                       {/* Stats */}
-                      <div className="flex items-center justify-between pt-4 border-t border-[#525252]/20">
+                      <div className="flex items-center justify-between pt-4 border-t border-border/20">
                         <div
-                          className="flex items-center space-x-4 text-xs text-[#A3A3A3]"
+                          className="flex items-center space-x-4 text-xs text-muted-foreground"
                           style={{ fontFamily: "IBM Plex Mono, monospace" }}
                         >
                           <div className="flex items-center space-x-1">
@@ -349,18 +349,18 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
                         </div>
                         <div className="flex items-center space-x-2">
                           <motion.button
-                            className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors"
+                            className="p-2 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                           >
-                            <Github className="w-4 h-4 text-[#A3A3A3]" />
+                            <Github className="w-4 h-4 text-muted-foreground" />
                           </motion.button>
                           <motion.button
-                            className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors"
+                            className="p-2 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                           >
-                            <ExternalLink className="w-4 h-4 text-[#A3A3A3]" />
+                            <ExternalLink className="w-4 h-4 text-muted-foreground" />
                           </motion.button>
                         </div>
                       </div>
@@ -368,7 +368,7 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
 
                     {/* Hover effect line */}
                     <motion.div
-                      className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#DC2626] to-transparent"
+                      className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent"
                       initial={{ scaleX: 0 }}
                       whileHover={{ scaleX: 1 }}
                       transition={{ duration: 0.3 }}
@@ -377,7 +377,7 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
 
                   {/* Glow effect on hover */}
                   <motion.div
-                    className="absolute -inset-1 bg-[#DC2626] rounded-sm blur-xl -z-10"
+                    className="absolute -inset-1 bg-primary rounded-sm blur-xl -z-10"
                     initial={{ opacity: 0 }}
                     animate={{
                       opacity: hoveredProject === project.id ? 0.2 : 0,
@@ -397,7 +397,7 @@ const ProjectsScreen = ({ onNavigate }: ProjectsScreenProps) => {
             transition={{ delay: 0.8 }}
           >
             <p
-              className="text-[#525252] text-sm"
+              className="text-muted-foreground text-sm"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               // "Talk is cheap. Show me the code." — Linus Torvalds
