@@ -2,8 +2,36 @@
 
 @import "tailwindcss";
 
-body{
-  background-color: #000000;
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 :root {
@@ -62,6 +90,12 @@ body{
   --ring: var(--highlight-red);
   --radius: 0.125rem;
 
+  /* Glass Effects - Dark */
+  --glass-bg: rgba(10, 10, 10, 0.85);
+  --glass-strong-bg: rgba(0, 0, 0, 0.95);
+  --glass-border: rgba(115, 115, 115, 0.2);
+  --grid-color: rgba(115, 115, 115, 0.3);
+
   /* Custom shadow variables */
   --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.5);
   --elevation-2: 0 4px 6px rgba(0, 0, 0, 0.4);
@@ -82,6 +116,89 @@ body{
   --chart-3: 30 80% 55%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
+}
+
+/* LIGHT MODE - Clean, Professional, Inverted Aesthetic */
+[data-theme="light"] {
+  /* Inverted base colors */
+  --terminal-black: #ffffff;
+  --void-black: #f5f5f5;
+  --carbon-black: #ebebeb;
+  --obsidian: #e5e5e5;
+  --charcoal: #d9d9d9;
+
+  /* Red stays vibrant in light mode */
+  --error-red: #dc2626;
+  --highlight-red: #ef4444;
+  --dark-red: #991b1b;
+  --dim-red: #7f1d1d;
+
+  /* Inverted grays */
+  --white: #000000;
+  --ghost-white: #0a0a0a;
+  --light-gray: #1a1a1a;
+  --medium-gray: #5c5c5c;
+  --dark-gray: #8c8c8c;
+  --darker-gray: #adadad;
+  --slate: #bfbfbf;
+
+  /* Semantic colors remain consistent */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+
+  /* Updated semantic mappings */
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --card: #f5f5f5;
+  --card-foreground: #1a1a1a;
+  --popover: #ebebeb;
+  --popover-foreground: #1a1a1a;
+  --primary: #dc2626;
+  --primary-foreground: #ffffff;
+  --secondary: #d9d9d9;
+  --secondary-foreground: #1a1a1a;
+  --muted: #e5e5e5;
+  --muted-foreground: #5c5c5c;
+  --accent: #dc2626;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #adadad;
+  --input: #ebebeb;
+  --input-background: #ebebeb;
+  --switch-background: #bfbfbf;
+
+  /* Glass Effects - Light */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-strong-bg: rgba(245, 245, 245, 0.95);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --grid-color: rgba(0, 0, 0, 0.1);
+
+  /* Light mode shadows */
+  --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --elevation-2: 0 4px 6px rgba(0, 0, 0, 0.08);
+  --elevation-3: 0 10px 25px rgba(0, 0, 0, 0.12);
+  --glow-red: 0 0 20px rgba(220, 38, 38, 0.2);
+  --glow-red-strong: 0 0 40px rgba(220, 38, 38, 0.3);
+
+  /* Light mode scanlines (subtle) */
+  --scanline-overlay: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.02) 0px,
+    rgba(0, 0, 0, 0.02) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+/* Smooth theme transition */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 @layer base {
@@ -161,18 +278,18 @@ body{
 
   /* Terminal-inspired glass effect */
   .terminal-glass {
-    background: rgba(10, 10, 10, 0.85);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(115, 115, 115, 0.2);
+    border: 1px solid var(--glass-border);
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   }
 
   .terminal-glass-strong {
-    background: rgba(0, 0, 0, 0.95);
+    background: var(--glass-strong-bg);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(115, 115, 115, 0.3);
+    border: 1px solid var(--glass-border);
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
   }
 

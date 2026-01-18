@@ -19,10 +19,18 @@ import {
   FolderGit2,
   Code2,
   Zap,
+  LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { type LucideIcon } from "lucide-react";
 import ParticleField from "../effects/ParticleField";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { useThemeStore } from "@/lib/store/theme-store";
+import { useAuthStore } from "@/lib/store/auth-store";
+import { toast } from "sonner";
 
 interface MainDashboardProps {
   onNavigate: (screen: string) => void;
@@ -39,6 +47,9 @@ interface Module {
 }
 
 const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
+  const router = useRouter();
+  const { user } = useAuthStore();
+  const { theme, setTheme } = useThemeStore();
   const [hoveredModule, setHoveredModule] = useState<string | null>(null);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -67,6 +78,23 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
+
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      toast.success("Logged out successfully");
+      router.push("/login");
+    } catch (error) {
+      toast.error("Failed to logout");
+    }
+  };
+
+  // Theme toggle handler
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   // Modules positioned like components on a motherboard
   const modules: Module[] = [
@@ -136,7 +164,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-screen bg-[#000000] overflow-hidden"
+      className="relative w-full h-screen bg-background overflow-hidden"
     >
       {/* Circuit board background */}
       {/* <CircuitBoard nodeCount={30} animated={true} /> */}
@@ -149,7 +177,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
 
       {/* Mouse follower effect */}
       <motion.div
-        className="absolute w-64 h-64 bg-[#DC2626] rounded-full blur-3xl pointer-events-none"
+        className="absolute w-64 h-64 bg-primary rounded-full blur-3xl pointer-events-none"
         animate={{
           x: mousePosition.x - 128,
           y: mousePosition.y - 128,
@@ -160,7 +188,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
 
       {/* Header */}
       <motion.div
-        className="relative z-10 border-b border-[#525252]/30 bg-[#0A0A0A]/90 backdrop-blur-xl"
+        className="relative z-10 border-b border-border/30 bg-background/90 backdrop-blur-xl"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, type: "spring" }}
@@ -173,20 +201,17 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                 animate={{ rotate: [0, 360] }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
               >
-                <Terminal
-                  className="w-8 h-8 text-[#DC2626]"
-                  strokeWidth={1.5}
-                />
+                <Terminal className="w-8 h-8 text-primary" strokeWidth={1.5} />
               </motion.div>
               <div>
                 <h1
-                  className="text-xl text-[#FFFFFF]"
+                  className="text-xl text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  NEXUS<span className="text-[#DC2626]">HUB</span>
+                  NEXUS<span className="text-primary">HUB</span>
                 </h1>
                 <p
-                  className="text-xs text-[#525252]"
+                  className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   MOTHERBOARD_CONTROL_CENTER
@@ -200,36 +225,80 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                 className="relative flex-1 md:flex-none"
                 whileHover={{ scale: 1.05 }}
               >
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search modules..."
-                  className="w-full md:w-64 pl-10 pr-4 py-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#E5E5E5] placeholder-[#525252] focus:outline-none focus:border-[#DC2626] text-sm transition-all"
+                  className="w-full md:w-64 pl-10 pr-4 py-2 bg-input-background border border-border/30 rounded-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary text-sm transition-all"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 />
               </motion.div>
 
               <div className="flex space-x-4">
                 <motion.button
-                  className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors relative"
+                  className="p-2 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors relative"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Bell className="w-5 h-5 text-[#A3A3A3]" strokeWidth={1.5} />
+                  <Bell
+                    className="w-5 h-5 text-muted-foreground"
+                    strokeWidth={1.5}
+                  />
                   <motion.div
-                    className="absolute top-1 right-1 w-2 h-2 bg-[#DC2626] rounded-full"
+                    className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"
                     animate={{ scale: [1, 1.3, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
                 </motion.button>
 
+                {/* Theme Toggle */}
+                <motion.button
+                  onClick={toggleTheme}
+                  className="p-2 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title={`Switch to ${
+                    theme === "dark" ? "light" : "dark"
+                  } mode`}
+                >
+                  {theme === "dark" ? (
+                    <Sun
+                      className="w-5 h-5 text-muted-foreground"
+                      strokeWidth={1.5}
+                    />
+                  ) : (
+                    <Moon
+                      className="w-5 h-5 text-muted-foreground"
+                      strokeWidth={1.5}
+                    />
+                  )}
+                </motion.button>
+
+                {/* Profile */}
                 <motion.button
                   onClick={() => onNavigate("profile")}
-                  className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors"
+                  className="p-2 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <User className="w-5 h-5 text-[#A3A3A3]" strokeWidth={1.5} />
+                  <User
+                    className="w-5 h-5 text-muted-foreground"
+                    strokeWidth={1.5}
+                  />
+                </motion.button>
+
+                {/* Logout */}
+                <motion.button
+                  onClick={handleLogout}
+                  className="p-2 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title="Logout"
+                >
+                  <LogOut
+                    className="w-5 h-5 text-muted-foreground"
+                    strokeWidth={1.5}
+                  />
                 </motion.button>
               </div>
             </div>
@@ -249,13 +318,13 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <motion.h2
-                className="text-3xl text-[#FFFFFF] mb-2"
+                className="text-3xl text-foreground mb-2"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
               >
                 Welcome Back,{" "}
                 <motion.span
-                  className="text-[#DC2626]"
+                  className="text-primary"
                   animate={{
                     textShadow: [
                       "0 0 10px rgba(220, 38, 38, 0.5)",
@@ -268,13 +337,13 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                   Developer
                 </motion.span>
               </motion.h2>
-              <p className="text-[#A3A3A3]">
+              <p className="text-muted-foreground">
                 All systems operational. Motherboard initialized.
               </p>
             </div>
             <div className="text-right">
               <motion.div
-                className="text-2xl text-[#FFFFFF]"
+                className="text-2xl text-foreground"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 key={time}
                 initial={{ scale: 1.1 }}
@@ -283,7 +352,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                 {time}
               </motion.div>
               <div
-                className="text-sm text-[#A3A3A3]"
+                className="text-sm text-muted-foreground"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 {new Date().toLocaleDateString()}
@@ -298,31 +367,31 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
               return (
                 <motion.div
                   key={stat.label}
-                  className="terminal-glass p-4 rounded-sm border border-[#525252]/20 relative overflow-hidden group hover:border-[#DC2626]/50 transition-all"
+                  className="terminal-glass p-4 rounded-sm border border-border/20 relative overflow-hidden group hover:border-primary/50 transition-all"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + i * 0.1 }}
                   whileHover={{ y: -5, scale: 1.02 }}
                 >
                   <motion.div
-                    className="absolute inset-0 bg-[#DC2626] opacity-0 group-hover:opacity-10 transition-opacity"
+                    className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity"
                     initial={false}
                   />
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-2">
                       <div
-                        className="text-xs text-[#A3A3A3]"
+                        className="text-xs text-muted-foreground"
                         style={{ fontFamily: "IBM Plex Mono, monospace" }}
                       >
                         {stat.label}
                       </div>
                       <Icon
-                        className="w-4 h-4 text-[#DC2626]"
+                        className="w-4 h-4 text-primary"
                         strokeWidth={1.5}
                       />
                     </div>
                     <div
-                      className="text-2xl text-[#FFFFFF]"
+                      className="text-2xl text-foreground"
                       style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     >
                       {stat.value}
@@ -343,13 +412,13 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
         >
           <div className="flex items-center justify-between mb-4">
             <h3
-              className="text-xl text-[#FFFFFF]"
+              className="text-xl text-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               HARDWARE_MODULES
             </h3>
             <div
-              className="flex items-center space-x-2 text-xs text-[#A3A3A3]"
+              className="flex items-center space-x-2 text-xs text-muted-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               <Activity className="w-4 h-4 text-[#22C55E]" />
@@ -358,7 +427,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
           </div>
 
           {/* Motherboard circuit board area - Desktop Only */}
-          <div className="relative h-125 terminal-glass-strong rounded-sm border border-[#525252]/30 overflow-hidden hidden md:block">
+          <div className="relative h-125 terminal-glass-strong rounded-sm border border-border/30 overflow-hidden hidden md:block">
             {/* Circuit traces background pattern */}
             <svg
               className="absolute inset-0 w-full h-full opacity-20"
@@ -378,7 +447,8 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                     y1="50"
                     x2="100"
                     y2="50"
-                    stroke="#525252"
+                    stroke="currentColor"
+                    className="text-border"
                     strokeWidth="1"
                   />
                   <line
@@ -386,10 +456,17 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                     y1="0"
                     x2="50"
                     y2="100"
-                    stroke="#525252"
+                    stroke="currentColor"
+                    className="text-border"
                     strokeWidth="1"
                   />
-                  <circle cx="50" cy="50" r="3" fill="#525252" />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="3"
+                    fill="currentColor"
+                    className="text-border"
+                  />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#circuit)" />
@@ -414,7 +491,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                       y1={y1}
                       x2={x2}
                       y2={y2}
-                      stroke="#DC2626"
+                      stroke="var(--primary)"
                       strokeWidth="2"
                       initial={{ pathLength: 0, opacity: 0 }}
                       animate={{ pathLength: 1, opacity: 0.3 }}
@@ -423,7 +500,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                     {/* Data pulse animation */}
                     <motion.circle
                       r="4"
-                      fill="#DC2626"
+                      fill="var(--primary)"
                       initial={{ offsetDistance: "0%" }}
                       animate={{ offsetDistance: "100%" }}
                       transition={{
@@ -470,19 +547,19 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                 >
                   {/* Component outer glow */}
                   <motion.div
-                    className="absolute -inset-8 bg-[#DC2626] rounded-full blur-xl"
+                    className="absolute -inset-8 bg-primary rounded-full blur-xl"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: hoveredModule === module.id ? 0.4 : 0 }}
                   />
 
                   {/* Component body */}
-                  <div className="relative terminal-glass-strong p-6 rounded-sm border-2 border-[#525252]/30 group-hover:border-[#DC2626] transition-all duration-300">
+                  <div className="relative terminal-glass-strong p-6 rounded-sm border-2 border-border/30 group-hover:border-primary transition-all duration-300">
                     {/* Circuit pins */}
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex space-x-1">
                       {[0, 1, 2].map((i) => (
                         <div
                           key={i}
-                          className="w-1 h-2 bg-[#737373] rounded-sm"
+                          className="w-1 h-2 bg-muted-foreground rounded-sm"
                         />
                       ))}
                     </div>
@@ -494,19 +571,19 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                       transition={{ duration: 0.6 }}
                     >
                       <Icon
-                        className="w-8 h-8 text-[#DC2626] mb-2"
+                        className="w-8 h-8 text-primary mb-2"
                         strokeWidth={1.5}
                       />
                     </motion.div>
 
                     <div
-                      className="text-xs text-[#FFFFFF] mb-1 whitespace-nowrap"
+                      className="text-xs text-foreground mb-1 whitespace-nowrap"
                       style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     >
                       {module.label}
                     </div>
                     <div
-                      className="text-[10px] text-[#525252] mb-2"
+                      className="text-[10px] text-muted-foreground mb-2"
                       style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     >
                       {module.description}
@@ -520,7 +597,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                             ? "bg-[#22C55E]"
                             : module.status === "processing"
                             ? "bg-[#F59E0B]"
-                            : "bg-[#737373]"
+                            : "bg-muted-foreground"
                         }`}
                         animate={{
                           scale: module.status !== "idle" ? [1, 1.3, 1] : 1,
@@ -535,7 +612,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                       {[0, 1, 2].map((i) => (
                         <div
                           key={i}
-                          className="w-1 h-2 bg-[#737373] rounded-sm"
+                          className="w-1 h-2 bg-muted-foreground rounded-sm"
                         />
                       ))}
                     </div>
@@ -543,7 +620,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
 
                   {/* Tooltip */}
                   <motion.div
-                    className="absolute -bottom-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#DC2626] text-[#FFFFFF] text-xs rounded-sm whitespace-nowrap"
+                    className="absolute -bottom-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs rounded-sm whitespace-nowrap"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     initial={{ opacity: 0, y: -10 }}
                     animate={{
@@ -553,7 +630,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                     transition={{ duration: 0.2 }}
                   >
                     LAUNCH_{module.screen.toUpperCase()}
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#DC2626] rotate-45" />
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-primary rotate-45" />
                   </motion.div>
                 </motion.button>
               );
@@ -568,19 +645,16 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                 <motion.button
                   key={module.id}
                   onClick={() => onNavigate(module.screen)}
-                  className="relative p-4 terminal-glass rounded-sm border border-[#525252]/30 hover:border-[#DC2626] transition-all text-left group overflow-hidden"
+                  className="relative p-4 terminal-glass rounded-sm border border-border/30 hover:border-primary transition-all text-left group overflow-hidden"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <motion.div className="absolute -right-4 -top-4 w-12 h-12 bg-[#DC2626] rounded-full blur-xl opacity-0 group-hover:opacity-20 transition-opacity" />
+                  <motion.div className="absolute -right-4 -top-4 w-12 h-12 bg-primary rounded-full blur-xl opacity-0 group-hover:opacity-20 transition-opacity" />
 
                   <div className="flex justify-between items-start mb-3">
-                    <Icon
-                      className="w-6 h-6 text-[#DC2626]"
-                      strokeWidth={1.5}
-                    />
+                    <Icon className="w-6 h-6 text-primary" strokeWidth={1.5} />
                     <div
                       className={`w-2 h-2 rounded-full ${
                         module.status === "online"
@@ -593,13 +667,13 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                   </div>
 
                   <div
-                    className="text-sm text-white font-medium mb-1"
+                    className="text-sm text-foreground font-medium mb-1"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     {module.label}
                   </div>
                   <div
-                    className="text-[10px] text-[#737373]"
+                    className="text-[10px] text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     {module.description}
@@ -612,19 +686,19 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
 
         {/* System log */}
         <motion.div
-          className="terminal-glass-strong rounded-sm border border-[#525252]/30 overflow-hidden"
+          className="terminal-glass-strong rounded-sm border border-border/30 overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1 }}
         >
-          <div className="px-6 py-4 bg-[#0A0A0A] border-b border-[#525252]/30 flex items-center justify-between">
+          <div className="px-6 py-4 bg-popover border-b border-border/30 flex items-center justify-between">
             <h3
-              className="text-sm text-[#FFFFFF]"
+              className="text-sm text-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               SYSTEM_LOG
             </h3>
-            <Code2 className="w-4 h-4 text-[#525252]" />
+            <Code2 className="w-4 h-4 text-border" />
           </div>
           <div
             className="p-6 space-y-3"
@@ -659,7 +733,9 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.2 + i * 0.1 }}
               >
-                <span className="text-[#525252] w-20 shrink-0">{log.time}</span>
+                <span className="text-muted-foreground w-20 shrink-0">
+                  {log.time}
+                </span>
                 <div
                   className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
                     log.status === "success"
@@ -667,7 +743,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                       : "bg-[#F59E0B] animate-pulse"
                   }`}
                 />
-                <span className="text-[#E5E5E5]">{log.action}</span>
+                <span className="text-foreground">{log.action}</span>
               </motion.div>
             ))}
           </div>
@@ -681,7 +757,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
           transition={{ delay: 1.5 }}
         >
           <p
-            className="text-[#525252] text-xs"
+            className="text-muted-foreground text-xs"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
           >
             &quot;The motherboard is the soul of the machine&quot; — Anonymous

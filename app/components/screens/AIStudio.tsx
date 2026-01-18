@@ -122,9 +122,9 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
   ];
 
   return (
-    <div className="relative w-full h-screen bg-[#000000] overflow-hidden flex flex-col">
+    <div className="relative w-full h-screen bg-background overflow-hidden flex flex-col">
       {/* Particle effects */}
-      <ParticleField density={50} color="#DC2626" />
+      <ParticleField density={50} />
 
       {/* Carbon fiber texture on sides */}
       <div className="hidden md:block absolute left-0 top-0 bottom-0 w-32">
@@ -142,8 +142,8 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <radialGradient id="neuralGlow">
-              <stop offset="0%" stopColor="#DC2626" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#DC2626" stopOpacity="0" />
+              <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
             </radialGradient>
           </defs>
           {[...Array(20)].map((_, i) => (
@@ -171,7 +171,7 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
 
       {/* Header */}
       <motion.div
-        className="relative z-10 border-b border-[#525252]/30 bg-[#0A0A0A]/90 backdrop-blur-xl shrink-0"
+        className="relative z-10 border-b border-border/30 bg-background/90 backdrop-blur-xl shrink-0"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", duration: 0.8 }}
@@ -181,24 +181,24 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
             <div className="flex items-center space-x-4">
               <motion.button
                 onClick={() => onNavigate("dashboard")}
-                className="p-2 hover:bg-[#1A1A1A] rounded-sm transition-colors"
+                className="p-2 hover:bg-secondary rounded-sm transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <ArrowLeft
-                  className="w-5 h-5 text-[#A3A3A3]"
+                  className="w-5 h-5 text-muted-foreground"
                   strokeWidth={1.5}
                 />
               </motion.button>
               <div>
                 <h1
-                  className="text-xl text-[#FFFFFF]"
+                  className="text-xl text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   AI_STUDIO
                 </h1>
                 <p
-                  className="text-xs text-[#525252]"
+                  className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   NEURAL_INTERFACE_v2.1.0
@@ -209,16 +209,16 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
             <div className="flex items-center space-x-4">
               {/* AI Status */}
               <motion.div
-                className="flex items-center space-x-2 px-4 py-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm"
+                className="flex items-center space-x-2 px-4 py-2 bg-secondary border border-border/30 rounded-sm"
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="w-2 h-2 rounded-full bg-[#22C55E]"
+                  className="w-2 h-2 rounded-full bg-green-500"
                   animate={{ scale: [1, 1.3, 1], opacity: [1, 0.5, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
                 <span
-                  className="text-[#A3A3A3] text-xs"
+                  className="text-muted-foreground text-xs"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   AI_ONLINE
@@ -236,21 +236,21 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                     className="flex items-center space-x-2"
                   >
                     <span
-                      className="text-xs text-[#525252]"
+                      className="text-xs text-muted-foreground"
                       style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     >
                       {metric.label}
                     </span>
-                    <div className="w-16 h-2 bg-[#1A1A1A] rounded-sm overflow-hidden">
+                    <div className="w-16 h-2 bg-secondary rounded-sm overflow-hidden">
                       <motion.div
-                        className="h-full bg-gradient-to-r from-[#DC2626] to-[#EF4444]"
+                        className="h-full bg-gradient-to-r from-primary to-destructive"
                         initial={{ width: 0 }}
                         animate={{ width: `${metric.value}%` }}
                         transition={{ duration: 0.5 }}
                       />
                     </div>
                     <span
-                      className="text-xs text-[#A3A3A3] w-8"
+                      className="text-xs text-muted-foreground w-8"
                       style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     >
                       {Math.floor(metric.value)}%
@@ -265,7 +265,7 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
 
       {/* AI Capabilities Bar */}
       <motion.div
-        className="relative z-10 border-b border-[#525252]/30 bg-[#0A0A0A]/80 backdrop-blur-xl shrink-0"
+        className="relative z-10 border-b border-border/30 bg-background/80 backdrop-blur-xl shrink-0"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
@@ -277,7 +277,7 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
               return (
                 <motion.div
                   key={cap.label}
-                  className="flex items-center space-x-3 p-2 terminal-glass rounded-sm border border-[#525252]/20"
+                  className="flex items-center space-x-3 p-2 terminal-glass rounded-sm border border-border/20"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 + i * 0.1 }}
@@ -286,16 +286,16 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                     borderColor: "rgba(220, 38, 38, 0.5)",
                   }}
                 >
-                  <Icon className="w-5 h-5 text-[#DC2626]" strokeWidth={1.5} />
+                  <Icon className="w-5 h-5 text-primary" strokeWidth={1.5} />
                   <div>
                     <div
-                      className="text-xs text-[#525252]"
+                      className="text-xs text-muted-foreground"
                       style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     >
                       {cap.label}
                     </div>
                     <div
-                      className="text-sm text-[#FFFFFF]"
+                      className="text-sm text-foreground"
                       style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     >
                       {cap.value}
@@ -309,7 +309,7 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
       </motion.div>
 
       {/* Chat messages */}
-      <div className="relative z-10 flex-1 overflow-y-auto text-white">
+      <div className="relative z-10 flex-1 overflow-y-auto text-foreground">
         <div className="max-w-[1000px] mx-auto px-4 md:px-8 py-8 space-y-6">
           {messages.map((message, index) => (
             <motion.div
@@ -339,12 +339,12 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                         }}
                       >
                         <Sparkles
-                          className="w-4 h-4 text-[#DC2626]"
+                          className="w-4 h-4 text-primary"
                           strokeWidth={1.5}
                         />
                       </motion.div>
                       <span
-                        className="text-xs text-[#A3A3A3]"
+                        className="text-xs text-muted-foreground"
                         style={{ fontFamily: "IBM Plex Mono, monospace" }}
                       >
                         NexusAI
@@ -354,11 +354,11 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                   {message.role === "user" && (
                     <>
                       <Terminal
-                        className="w-4 h-4 text-[#A3A3A3]"
+                        className="w-4 h-4 text-muted-foreground"
                         strokeWidth={1.5}
                       />
                       <span
-                        className="text-xs text-[#A3A3A3]"
+                        className="text-xs text-muted-foreground"
                         style={{ fontFamily: "IBM Plex Mono, monospace" }}
                       >
                         Developer
@@ -367,14 +367,14 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                   )}
                   {message.role === "system" && (
                     <span
-                      className="text-xs text-[#525252]"
+                      className="text-xs text-muted-foreground"
                       style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     >
                       SYSTEM
                     </span>
                   )}
                   <span
-                    className="text-xs text-[#525252]"
+                    className="text-xs text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     {message.timestamp.toLocaleTimeString()}
@@ -385,17 +385,17 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                 <motion.div
                   className={`group relative p-4 rounded-sm ${
                     message.role === "system"
-                      ? "bg-[#0A0A0A] border border-[#525252]/30 text-center"
+                      ? "bg-secondary border border-border/30 text-center"
                       : message.role === "user"
-                      ? "bg-gradient-to-br from-[#DC2626] to-[#991B1B] text-[#FFFFFF]"
-                      : "terminal-glass-strong border border-[#525252]/30"
+                      ? "bg-gradient-to-br from-primary to-destructive text-primary-foreground"
+                      : "terminal-glass-strong border border-border/30"
                   }`}
                   whileHover={{ scale: message.role !== "system" ? 1.02 : 1 }}
                 >
                   {/* Glow effect for assistant messages */}
                   {message.role === "assistant" && (
                     <motion.div
-                      className="absolute -inset-1 bg-[#DC2626] rounded-sm blur-lg -z-10"
+                      className="absolute -inset-1 bg-primary rounded-sm blur-lg -z-10"
                       initial={{ opacity: 0 }}
                       whileHover={{ opacity: 0.2 }}
                     />
@@ -416,13 +416,13 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                   {/* Actions for assistant messages */}
                   {message.role === "assistant" && (
                     <motion.div
-                      className="flex items-center space-x-2 mt-3 pt-3 border-t border-[#525252]/30"
+                      className="flex items-center space-x-2 mt-3 pt-3 border-t border-border/30"
                       initial={{ opacity: 0 }}
                       whileHover={{ opacity: 1 }}
                       transition={{ duration: 0.2 }}
                     >
                       <motion.button
-                        className="flex items-center space-x-1 px-2 py-1 text-xs text-[#A3A3A3] hover:text-[#FFFFFF] transition-colors"
+                        className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                       >
@@ -434,7 +434,7 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                         </span>
                       </motion.button>
                       <motion.button
-                        className="flex items-center space-x-1 px-2 py-1 text-xs text-[#A3A3A3] hover:text-[#FFFFFF] transition-colors"
+                        className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                       >
@@ -470,23 +470,23 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                     }}
                   >
                     <Sparkles
-                      className="w-4 h-4 text-[#DC2626]"
+                      className="w-4 h-4 text-primary"
                       strokeWidth={1.5}
                     />
                   </motion.div>
                   <span
-                    className="text-xs text-[#A3A3A3]"
+                    className="text-xs text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     NexusAI is processing...
                   </span>
                 </div>
-                <div className="terminal-glass p-4 rounded-sm border border-[#525252]/30">
+                <div className="terminal-glass p-4 rounded-sm border border-border/30">
                   <div className="flex items-center space-x-2">
                     {[0, 1, 2].map((i) => (
                       <motion.div
                         key={i}
-                        className="w-2 h-2 bg-[#DC2626] rounded-full"
+                        className="w-2 h-2 bg-primary rounded-full"
                         animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
                         transition={{
                           duration: 1.5,
@@ -507,7 +507,7 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
 
       {/* Input area */}
       <motion.div
-        className="relative z-10 border-t border-[#525252]/30 bg-[#0A0A0A]/90 backdrop-blur-xl shrink-0"
+        className="relative z-10 border-t border-border/30 bg-background/90 backdrop-blur-xl shrink-0"
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", duration: 0.8 }}
@@ -515,7 +515,7 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
         <div className="max-w-[1000px] mx-auto px-4 md:px-8 py-4">
           <div className="flex items-end space-x-4">
             <motion.div
-              className="flex-1 terminal-glass-strong rounded-sm border border-[#525252]/30 focus-within:border-[#DC2626] transition-colors overflow-hidden"
+              className="flex-1 terminal-glass-strong rounded-sm border border-border/30 focus-within:border-primary transition-colors overflow-hidden"
               whileFocus={{ scale: 1.01 }}
             >
               <textarea
@@ -523,7 +523,7 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything..."
-                className="w-full px-4 py-3 bg-transparent text-[#E5E5E5] placeholder-[#525252] focus:outline-none resize-none"
+                className="w-full px-4 py-3 bg-transparent text-foreground placeholder-muted-foreground focus:outline-none resize-none"
                 style={{
                   fontFamily: "IBM Plex Mono, monospace",
                   fontSize: "14px",
@@ -534,7 +534,7 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
             <motion.button
               onClick={handleSend}
               disabled={!input.trim()}
-              className="relative p-4 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
+              className="relative p-4 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -550,14 +550,14 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
 
           <div className="flex items-center justify-between mt-3">
             <p
-              className="text-xs text-[#525252]"
+              className="text-xs text-muted-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               // "Any sufficiently advanced AI is indistinguishable from magic."
               — Clarke's Third Law (adapted)
             </p>
             <div
-              className="text-xs text-[#525252]"
+              className="text-xs text-muted-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               {input.length} / 4000
