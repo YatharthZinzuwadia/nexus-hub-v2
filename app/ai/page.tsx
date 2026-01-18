@@ -1,14 +1,23 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import AIStudio from "../components/screens/AIStudio";
+import DashboardShell from "../components/layout/DashboardShell";
+import PageTransition from "../components/effects/PageTransition";
 
 export default function AIPage() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleNavigate = (screen: string) => {
     router.push(`/${screen}`);
   };
 
-  return <AIStudio onNavigate={handleNavigate} />;
+  return (
+    <DashboardShell>
+      <PageTransition transitionKey={pathname}>
+        <AIStudio onNavigate={handleNavigate} />
+      </PageTransition>
+    </DashboardShell>
+  );
 }
