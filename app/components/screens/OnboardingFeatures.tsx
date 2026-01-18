@@ -9,141 +9,30 @@ interface OnboardingFeaturesProps {
 }
 
 /**
- * VARIANTS
- * These control how different sections enter and animate together.
+ * ONBOARDING FEATURES - Fixed for responsiveness and proper animations
+ *
+ * Fixes:
+ * - Added initial="hidden" to trigger entry animations
+ * - Removed excessive delays
+ * - Made fully responsive
+ * - Added overflow handling
+ * - Optimized animations
  */
 
-// Whole page container: subtle fade/slide in
 const pageVariants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    y: 0,
     transition: {
-      duration: 0.8,
+      duration: 0.5,
       ease: easeOut,
-      when: "before-children",
-      delay: 0.1,
+      when: "beforeChildren",
+      staggerChildren: 0.1,
     },
   },
 };
 
-// Top header block: stagger badge, title, and paragraph
 const headerVariants = {
-  hidden: { opacity: 0, y: 18 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: easeOut,
-      delayChildren: 0.05,
-      staggerChildren: 0.12,
-    },
-  },
-};
-
-const badgeVariants = {
-  hidden: { opacity: 0, scale: 0.9, y: 10 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: easeOut },
-  },
-};
-
-const titleVariants = {
-  hidden: { opacity: 0, y: 18 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: easeOut },
-  },
-};
-
-const subtitleVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: easeOut, delay: 0.05 },
-  },
-};
-
-// Features grid: cards stagger in and each card has its own micro-motion
-const featuresGridVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: easeOut,
-      delayChildren: 0.1,
-      staggerChildren: 0.12,
-    },
-  },
-};
-
-const featureCardVariants = {
-  hidden: { opacity: 0, y: 24, scale: 0.96 },
-  visible: (index: number) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.55,
-      ease: easeOut,
-      delay: 0.1 + index * 0.04,
-    },
-  }),
-};
-
-// Icon container: subtle breathing + glow to imply "live" features
-const featureIconVariants = {
-  initial: { scale: 1, rotateZ: 0 },
-  animate: {
-    scale: [1, 1.06, 1],
-    rotateZ: [0, 2, -2, 0],
-    transition: {
-      duration: 4,
-      repeat: Infinity,
-      ease: easeInOut,
-    },
-  },
-};
-
-// Code snippet block: fade in, then slight glow pulse
-const codeBlockVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: easeOut,
-      delay: 0.4,
-    },
-  },
-};
-
-// Nav buttons row
-const navRowVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: easeOut,
-      delay: 0.6,
-    },
-  },
-};
-
-// Progress indicator at bottom
-const progressVariants = {
   hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
@@ -151,7 +40,40 @@ const progressVariants = {
     transition: {
       duration: 0.5,
       ease: easeOut,
-      delay: 0.8,
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: easeOut },
+  },
+};
+
+const featuresGridVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const featureCardVariants = {
+  hidden: { opacity: 0, y: 15, scale: 0.98 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: easeOut,
     },
   },
 };
@@ -189,29 +111,33 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
   ];
 
   return (
-    <div className="relative w-full min-h-screen bg-black flex justify-center items-center">
+    <div className="relative w-full min-h-screen bg-background flex justify-center items-center overflow-y-auto overflow-x-hidden py-8 md:py-0">
       {/* Grid pattern background */}
       <div className="absolute inset-0 grid-pattern opacity-20" />
 
       {/* Main animated container */}
       <motion.div
-        className="relative z-10 max-w-6xl w-full h-full py-6 px-4 sm:px-8 bg-black"
+        className="relative z-10 w-full max-w-6xl px-4 sm:px-6 md:px-8"
         variants={pageVariants}
+        initial="hidden"
         animate="visible"
       >
         {/* HEADER */}
-        <motion.div className="text-center mb-12" variants={headerVariants}>
-          {/* Top badge: loading bar style */}
-          <motion.div className="inline-block mb-4" variants={badgeVariants}>
-            <div className="flex items-center space-x-2 px-3 py-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm">
+        <motion.div
+          className="text-center mb-8 md:mb-12"
+          variants={headerVariants}
+        >
+          {/* Top badge */}
+          <motion.div className="inline-block mb-4" variants={itemVariants}>
+            <div className="flex items-center space-x-2 px-3 py-1.5 bg-secondary border border-border/30 rounded-sm">
               <span
-                className="text-[#DC2626] text-xs"
+                className="text-primary text-xs"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 █████░░░░░
               </span>
               <span
-                className="text-[#A3A3A3] text-xs"
+                className="text-muted-foreground text-xs"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 LOADING FEATURES
@@ -221,16 +147,16 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
 
           {/* Title */}
           <motion.h2
-            className="text-3xl md:text-5xl tracking-tight text-[#FFFFFF] mb-4"
-            variants={titleVariants}
+            className="text-3xl sm:text-4xl md:text-5xl tracking-tight text-foreground mb-3 md:mb-4"
+            variants={itemVariants}
           >
-            Built for <span className="text-[#DC2626]">Developers</span>
+            Built for <span className="text-primary">Developers</span>
           </motion.h2>
 
           {/* Subtitle */}
           <motion.p
-            className="text-[#A3A3A3] text-lg max-w-2xl mx-auto"
-            variants={subtitleVariants}
+            className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto px-4"
+            variants={itemVariants}
           >
             Every feature designed with the hacker mindset. Because good code
             deserves a good interface.
@@ -239,7 +165,7 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
 
         {/* FEATURES GRID */}
         <motion.div
-          className="grid md:grid-cols-2 gap-6 mb-12"
+          className="grid sm:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-12"
           variants={featuresGridVariants}
         >
           {features.map((feature, index) => {
@@ -247,44 +173,25 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
             return (
               <motion.div
                 key={feature.title}
-                className="group terminal-glass p-6 rounded-sm border border-[#525252]/20 hover:border-[#DC2626]/50 transition-all duration-300"
+                className="group terminal-glass p-4 md:p-6 rounded-sm border border-border/20 hover:border-primary/50 transition-all duration-300"
                 variants={featureCardVariants}
-                custom={index}
                 whileHover={{
-                  translateY: -4, // subtle lift
-                  scale: 1.02, // slight zoom
+                  translateY: -3,
+                  scale: 1.01,
                 }}
               >
-                <div className="flex items-start justify-between mb-4">
-                  {/* Icon container with micro-animation */}
-                  <motion.div
-                    className="relative p-3 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm overflow-hidden"
-                    variants={featureIconVariants}
-                    initial="initial"
-                    animate="animate"
-                  >
-                    {/* Glow halo */}
-                    <motion.div
-                      className="absolute inset-0 rounded-sm bg-[#DC2626]/30 blur-md"
-                      animate={{
-                        opacity: [0.15, 0.4, 0.15],
-                        scale: [1, 1.15, 1],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: easeInOut,
-                      }}
-                    />
+                <div className="flex items-start justify-between mb-3 md:mb-4">
+                  {/* Icon container */}
+                  <div className="p-2.5 md:p-3 bg-secondary border border-border/30 rounded-sm">
                     <Icon
-                      className="relative w-6 h-6 text-[#DC2626]"
+                      className="w-5 h-5 md:w-6 md:h-6 text-primary"
                       strokeWidth={1.5}
                     />
-                  </motion.div>
+                  </div>
 
                   {/* Tag pill */}
                   <span
-                    className="text-xs text-[#A3A3A3] px-2 py-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm"
+                    className="text-xs text-muted-foreground px-2 py-1 bg-secondary border border-border/30 rounded-sm"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     {feature.tag}
@@ -292,24 +199,24 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
                 </div>
 
                 {/* Title & description */}
-                <h3 className="text-xl text-[#FFFFFF] mb-2">{feature.title}</h3>
-                <p className="text-[#A3A3A3] text-sm leading-relaxed">
+                <h3 className="text-lg md:text-xl text-foreground mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   {feature.description}
                 </p>
 
                 {/* Hover footer line */}
-                <div className="mt-4 pt-4 border-t border-[#525252]/20">
+                <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-border/20">
                   <div className="flex items-center justify-between">
-                    {/* Left: Explore text fades in */}
-                    <div className="flex items-center space-x-2 text-[#DC2626] text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center space-x-2 text-primary text-sm opacity-0 group-hover:opacity-100 transition-opacity">
                       <span style={{ fontFamily: "IBM Plex Mono, monospace" }}>
                         Explore
                       </span>
                       <ChevronRight className="w-4 h-4" />
                     </div>
-                    {/* Right: thin progress bar that fills on hover */}
-                    <div className="flex-1 ml-4 h-px bg-[#525252]/30 overflow-hidden">
-                      <div className="h-px w-0 bg-[#DC2626] group-hover:w-full transition-all duration-300" />
+                    <div className="flex-1 ml-4 h-px bg-border/30 overflow-hidden">
+                      <div className="h-px w-0 bg-primary group-hover:w-full transition-all duration-300" />
                     </div>
                   </div>
                 </div>
@@ -320,75 +227,69 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
 
         {/* CODE SNIPPET SHOWCASE */}
         <motion.div
-          className="terminal-glass-strong rounded-sm overflow-hidden border border-[#525252]/30 max-w-3xl mx-auto"
-          variants={codeBlockVariants}
+          className="terminal-glass-strong rounded-sm overflow-hidden border border-border/30 max-w-3xl mx-auto mb-8 md:mb-12"
+          variants={itemVariants}
         >
-          {/* Header bar of code block */}
-          <div className="flex items-center justify-between px-4 py-2 bg-[#0A0A0A] border-b border-[#525252]/30">
+          {/* Header bar */}
+          <div className="flex items-center justify-between px-3 md:px-4 py-2 bg-popover border-b border-border/30">
             <span
-              className="text-[#A3A3A3] text-xs"
+              className="text-muted-foreground text-xs"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               example.tsx
             </span>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 rounded-full bg-[#737373]" />
-              <div className="w-2 h-2 rounded-full bg-[#737373]" />
+              <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+              <div className="w-2 h-2 rounded-full bg-muted-foreground" />
               <motion.div
-                className="w-2 h-2 rounded-full bg-[#DC2626]"
-                animate={{ scale: [1, 1.4, 1] }}
+                className="w-2 h-2 rounded-full bg-primary"
+                animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 1.8, repeat: Infinity }}
               />
             </div>
           </div>
 
           {/* Code content */}
-          <motion.div
-            className="p-4 text-sm"
+          <div
+            className="p-4 md:p-6 text-xs md:text-sm"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
-            animate={{
-              boxShadow: [
-                "0 0 0px rgba(220,38,38,0.0)",
-                "0 0 24px rgba(220,38,38,0.25)",
-                "0 0 0px rgba(220,38,38,0.0)",
-              ],
-            }}
-            transition={{ duration: 4, repeat: Infinity, ease: easeInOut }}
           >
-            <div className="text-[#737373]">
-              <span className="text-[#DC2626]">const</span>{" "}
-              <span className="text-[#E5E5E5]">developer</span> ={" "}
-              <span className="text-[#22C55E]">&quot;You&quot;</span>;
+            <div className="text-muted-foreground">
+              <span className="text-primary">const</span>{" "}
+              <span className="text-foreground">developer</span> ={" "}
+              <span className="text-success">&quot;You&quot;</span>;
             </div>
-            <div className="text-[#737373]">
-              <span className="text-[#DC2626]">const</span>{" "}
-              <span className="text-[#E5E5E5]">potential</span> ={" "}
-              <span className="text-[#E5E5E5]">Infinity</span>;
+            <div className="text-muted-foreground">
+              <span className="text-primary">const</span>{" "}
+              <span className="text-foreground">potential</span> ={" "}
+              <span className="text-foreground">Infinity</span>;
             </div>
-            <div className="text-[#A3A3A3] mt-2">build something amazing</div>
-          </motion.div>
+            <div className="text-muted-foreground mt-2">
+              build something amazing
+            </div>
+          </div>
         </motion.div>
 
         {/* NAVIGATION BUTTONS */}
         <motion.div
-          className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 mt-12"
-          variants={navRowVariants}
+          className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 md:gap-4"
+          variants={itemVariants}
         >
           <motion.button
             onClick={onSkip}
-            className="w-full md:w-auto px-6 py-3 bg-transparent text-[#A3A3A3] rounded-sm hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-all duration-200 border border-[#525252]/30"
+            className="px-6 py-3 bg-transparent text-muted-foreground rounded-sm hover:text-foreground hover:bg-secondary transition-all duration-200 border border-border/30"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             Skip Tour
           </motion.button>
           <motion.button
             onClick={onNext}
-            className="group w-full md:w-auto flex items-center justify-center space-x-2 px-6 py-3 bg-[#DC2626] text-[#FFFFFF] rounded-sm hover:bg-[#EF4444] transition-all duration-200 border border-[#DC2626]"
+            className="group flex items-center justify-center space-x-2 px-6 py-3 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-all duration-200 border border-primary"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <span>Continue</span>
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -397,17 +298,17 @@ const OnboardingFeatures = ({ onNext, onSkip }: OnboardingFeaturesProps) => {
 
         {/* PROGRESS INDICATOR */}
         <motion.div
-          className="flex items-center justify-center space-x-2 mt-8"
-          variants={progressVariants}
+          className="flex items-center justify-center space-x-2 md:space-x-3 mt-6 md:mt-8"
+          variants={itemVariants}
         >
-          <div className="w-8 h-1 bg-[#525252]/30" />
+          <div className="w-8 md:w-12 h-1 bg-border/30" />
           <motion.div
-            className="w-8 h-1 bg-[#DC2626]"
+            className="w-8 md:w-12 h-1 bg-primary"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ duration: 0.6, ease: easeOut }}
+            transition={{ duration: 0.5, ease: easeOut, delay: 0.3 }}
           />
-          <div className="w-8 h-1 bg-[#525252]/30" />
+          <div className="w-8 md:w-12 h-1 bg-border/30" />
         </motion.div>
       </motion.div>
     </div>

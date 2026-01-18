@@ -68,7 +68,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
     onLogin();
   };
   return (
-    <div className="relative w-full min-h-screen bg-black flex items-center justify-center py-8 md:py-0 overflow-hidden">
+    <div className="relative w-full min-h-screen bg-background flex items-center justify-center py-8 md:py-0 overflow-hidden">
       {/* Particle effect - optimized */}
       <ParticleField density={100} />
       {/* Grid pattern background */}
@@ -92,19 +92,16 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               className="flex items-center justify-center md:justify-start space-x-3"
               variants={itemVariants}
             >
-              <Terminal
-                className="w-12 h-12 text-[#DC2626]"
-                strokeWidth={1.5}
-              />
+              <Terminal className="w-12 h-12 text-primary" strokeWidth={1.5} />
               <div>
                 <h1
-                  className="text-4xl tracking-tight text-white"
+                  className="text-4xl tracking-tight text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  NEXUS<span className="text-[#DC2626]">HUB</span>
+                  NEXUS<span className="text-primary">HUB</span>
                 </h1>
                 <p
-                  className="text-[#A3A3A3] text-sm"
+                  className="text-muted-foreground text-sm"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   v2.1.0
@@ -113,10 +110,10 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
             </motion.div>
 
             <motion.div className="space-y-4" variants={itemVariants}>
-              <h2 className="text-3xl text-white">
-                Access <span className="text-[#DC2626]">Terminal</span>
+              <h2 className="text-3xl text-foreground">
+                Access <span className="text-primary">Terminal</span>
               </h2>
-              <p className="text-[#A3A3A3] leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed">
                 Authenticate to access your development environment. Your
                 workspace awaits.
               </p>
@@ -124,12 +121,12 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
             {/* Terminal-style info box */}
             <motion.div
-              className="terminal-glass-strong rounded-sm overflow-hidden border border-[#525252]/30 max-w-md mx-auto md:mx-0"
+              className="terminal-glass-strong rounded-sm overflow-hidden border border-border/30 max-w-md mx-auto md:mx-0"
               variants={itemVariants}
             >
-              <div className="px-4 py-2 bg-[#0A0A0A] border-b border-[#525252]/30">
+              <div className="px-4 py-2 bg-secondary border-b border-border/30">
                 <span
-                  className="text-[#A3A3A3] text-xs"
+                  className="text-muted-foreground text-xs"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   system_info.log
@@ -139,19 +136,19 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 className="p-4 space-y-2 text-xs"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
-                <div className="text-[#E5E5E5]">
-                  <span className="text-[#DC2626]">▸</span> Encrypted connection
+                <div className="text-foreground">
+                  <span className="text-primary">▸</span> Encrypted connection
                   established
                 </div>
-                <div className="text-[#E5E5E5]">
-                  <span className="text-[#DC2626]">▸</span> SSH tunnel active on
+                <div className="text-foreground">
+                  <span className="text-primary">▸</span> SSH tunnel active on
                   port 22
                 </div>
-                <div className="text-[#E5E5E5]">
-                  <span className="text-[#DC2626]">▸</span> Authentication
+                <div className="text-foreground">
+                  <span className="text-primary">▸</span> Authentication
                   required
                 </div>
-                <div className="text-[#525252] mt-4">
+                <div className="text-muted-foreground mt-4">
                   Security first, always.
                 </div>
               </div>
@@ -160,21 +157,21 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
           {/* Right side - Login form */}
           <motion.div
-            className="terminal-glass p-6 sm:p-8 rounded-sm border border-[#525252]/30"
+            className="terminal-glass p-6 sm:p-8 rounded-sm border border-border/30"
             variants={rightColumnVariants}
           >
             <motion.div className="mb-6" variants={itemVariants}>
-              <div className="inline-flex items-center space-x-2 px-3 py-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm mb-4">
-                <div className="w-2 h-2 rounded-full bg-[#DC2626] animate-pulse" />
+              <div className="inline-flex items-center space-x-2 px-3 py-1 bg-secondary border border-border/30 rounded-sm mb-4">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span
-                  className="text-[#A3A3A3] text-xs"
+                  className="text-muted-foreground text-xs"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   SECURE LOGIN
                 </span>
               </div>
-              <h3 className="text-2xl text-white mb-2">Sign In</h3>
-              <p className="text-[#A3A3A3] text-sm">
+              <h3 className="text-2xl text-foreground mb-2">Sign In</h3>
+              <p className="text-muted-foreground text-sm">
                 Enter your credentials to continue
               </p>
             </motion.div>
@@ -183,7 +180,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               {/* Username field */}
               <motion.div className="space-y-2" variants={itemVariants}>
                 <label
-                  className="flex items-center space-x-2 text-sm text-[#A3A3A3]"
+                  className="flex items-center space-x-2 text-sm text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   <User className="w-4 h-4" />
@@ -194,7 +191,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="developer@nexus"
-                  className="w-full px-4 py-3 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#E5E5E5] placeholder-[#525252] focus:outline-none focus:border-[#DC2626] transition-colors"
+                  className="w-full px-4 py-3 bg-secondary border border-border/30 rounded-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary transition-colors"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 />
               </motion.div>
@@ -202,7 +199,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               {/* Password field */}
               <motion.div className="space-y-2" variants={itemVariants}>
                 <label
-                  className="flex items-center space-x-2 text-sm text-[#A3A3A3]"
+                  className="flex items-center space-x-2 text-sm text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   <Key className="w-4 h-4" />
@@ -214,13 +211,13 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#E5E5E5] placeholder-[#525252] focus:outline-none focus:border-[#DC2626] transition-colors"
+                    className="w-full px-4 py-3 bg-secondary border border-border/30 rounded-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary transition-colors"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] hover:text-[#A3A3A3] text-xs"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     {showPassword ? "HIDE" : "SHOW"}
@@ -233,10 +230,10 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 className="flex flex-col sm:flex-row items-center justify-between text-sm gap-4"
                 variants={itemVariants}
               >
-                <label className="flex items-center space-x-2 text-[#A3A3A3] cursor-pointer">
+                <label className="flex items-center space-x-2 text-muted-foreground cursor-pointer">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm checked:bg-[#DC2626] checked:border-[#DC2626]"
+                    className="w-4 h-4 bg-secondary border border-border/30 rounded-sm checked:bg-primary checked:border-primary"
                   />
                   <span style={{ fontFamily: "IBM Plex Mono, monospace" }}>
                     Remember me
@@ -244,7 +241,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 </label>
                 <button
                   type="button"
-                  className="text-[#DC2626] hover:text-[#EF4444] transition-colors"
+                  className="text-primary hover:text-destructive transition-colors"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   Forgot password?
@@ -254,7 +251,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               {/* Submit button */}
               <motion.button
                 type="submit"
-                className="group w-full flex items-center justify-center space-x-2 px-6 py-3 bg-[#DC2626] text-white rounded-sm hover:bg-[#EF4444] transition-all border border-[#DC2626]"
+                className="group w-full flex items-center justify-center space-x-2 px-6 py-3 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-all border border-primary"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 variants={itemVariants}
                 whileHover={{ scale: 1.02 }}
@@ -267,11 +264,11 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               {/* Divider */}
               <motion.div className="relative my-4" variants={itemVariants}>
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-[#525252]/30" />
+                  <div className="w-full border-t border-border/30" />
                 </div>
                 <div className="relative flex justify-center text-xs">
                   <span
-                    className="px-2 bg-[#0A0A0A] text-[#525252]"
+                    className="px-2 bg-secondary text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     OR
@@ -282,7 +279,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               {/* Alternative login */}
               <motion.button
                 type="button"
-                className="w-full px-6 py-3 bg-transparent text-[#A3A3A3] rounded-sm hover:text-white hover:bg-[#1A1A1A] transition-all border border-[#525252]/30"
+                className="w-full px-6 py-3 bg-transparent text-muted-foreground rounded-sm hover:text-foreground hover:bg-secondary transition-all border border-border/30"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 variants={itemVariants}
                 whileHover={{ scale: 1.02 }}
@@ -294,11 +291,11 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
             {/* Footer note */}
             <motion.div
-              className="mt-6 pt-6 border-t border-[#525252]/30"
+              className="mt-6 pt-6 border-t border-border/30"
               variants={itemVariants}
             >
               <p
-                className="text-xs text-[#525252] text-center"
+                className="text-xs text-muted-foreground text-center"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 Protected by military-grade encryption

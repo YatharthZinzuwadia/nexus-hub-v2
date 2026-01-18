@@ -5,12 +5,12 @@ import { motion, easeOut } from "motion/react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowRight, Key, Mail, Terminal, User } from "lucide-react";
+import { ArrowRight, Key, Terminal, User, Mail } from "lucide-react";
 import Link from "next/link";
 import ParticleField from "../components/effects/ParticleField";
 
 /**
- * LOGIN PAGE - Matches NexusHub Design System
+ * SIGNUP PAGE - Matches NexusHub Design System
  *
  * Design Elements:
  * - Terminal icon logo with NEXUSHUB branding
@@ -20,9 +20,9 @@ import ParticleField from "../components/effects/ParticleField";
  * - Consistent color palette (#DC2626 red accent)
  *
  * Authentication:
- * - Supabase email/password login
- * - Session stored in httpOnly cookies
- * - Redirects to /dashboard on success
+ * - Supabase email/password signup
+ * - Email confirmation sent
+ * - Redirects to /login on success
  */
 
 // Page-level animation variants
@@ -74,21 +74,41 @@ const itemVariants = {
   },
 };
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
-    remember: false,
   });
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Password strength calculation
+  const getPasswordStrength = (password: string) => {
+    if (!password) return 0;
+    let strength = 0;
+    if (password.length >= 8) strength += 25;
+    if (password.length >= 12) strength += 25;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+    if (/\d/.test(password)) strength += 15;
+    if (/[^a-zA-Z\d]/.test(password)) strength += 10;
+    return Math.min(strength, 100);
+  };
+
+  const passwordStrength = getPasswordStrength(formData.password);
+
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password) {
-      toast.error("Email and password are required");
+    // Validation
+    if (!formData.email || !formData.password || !formData.name) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      toast.error("Password must be at least 8 characters");
       return;
     }
 
@@ -97,22 +117,29 @@ export default function LoginPage() {
     try {
       const supabase = createClient();
 
-      // Supabase login
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // Supabase signup
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          },
+        },
       });
 
       if (error) throw error;
 
-      // Success - session is automatically stored in cookies
-      toast.success("Welcome back!");
+      // Success
+      toast.success("Account created! Check your email to confirm.");
 
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
     } catch (error: any) {
-      console.error("Login error:", error);
-      toast.error(error.message || "Invalid credentials");
+      console.error("Signup error:", error);
+      toast.error(error.message || "Failed to create account");
     } finally {
       setLoading(false);
     }
@@ -167,11 +194,11 @@ export default function LoginPage() {
             {/* Heading */}
             <motion.div className="space-y-4" variants={itemVariants}>
               <h2 className="text-3xl text-foreground">
-                Access <span className="text-primary">Terminal</span>
+                Create Your <span className="text-primary">Workspace</span>
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Authenticate to access your development environment. Your
-                workspace awaits.
+                Join the next generation of developers. Build, deploy, and scale
+                with confidence.
               </p>
             </motion.div>
 
@@ -185,7 +212,7 @@ export default function LoginPage() {
                   className="text-muted-foreground text-xs"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  system_info.log
+                  features.log
                 </span>
               </div>
               <div
@@ -193,25 +220,25 @@ export default function LoginPage() {
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 <div className="text-foreground">
-                  <span className="text-primary">▸</span> Encrypted connection
-                  established
+                  <span className="text-primary">▸</span> AI-powered code
+                  assistance
                 </div>
                 <div className="text-foreground">
-                  <span className="text-primary">▸</span> SSH tunnel active on
-                  port 22
+                  <span className="text-primary">▸</span> Real-time
+                  collaboration
                 </div>
                 <div className="text-foreground">
-                  <span className="text-primary">▸</span> Authentication
-                  required
+                  <span className="text-primary">▸</span> Unlimited projects &
+                  storage
                 </div>
                 <div className="text-muted-foreground mt-4">
-                  Security first, always.
+                  Everything you need to build.
                 </div>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* RIGHT - Login form */}
+          {/* RIGHT - Signup form */}
           <motion.div
             className="terminal-glass p-6 sm:p-8 rounded-sm border border-border/30"
             variants={rightColumnVariants}
@@ -224,16 +251,38 @@ export default function LoginPage() {
                   className="text-muted-foreground text-xs"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  SECURE LOGIN
+                  NEW ACCOUNT
                 </span>
               </div>
-              <h3 className="text-2xl text-foreground mb-2">Sign In</h3>
+              <h3 className="text-2xl text-foreground mb-2">Sign Up</h3>
               <p className="text-muted-foreground text-sm">
-                Enter your credentials to continue
+                Create your developer account
               </p>
             </motion.div>
 
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={handleSignup} className="space-y-6">
+              {/* Name field */}
+              <motion.div className="space-y-2" variants={itemVariants}>
+                <label
+                  className="flex items-center space-x-2 text-sm text-muted-foreground"
+                  style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                >
+                  <User className="w-4 h-4" />
+                  <span>Full Name</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  placeholder="John Doe"
+                  disabled={loading}
+                  className="w-full px-4 py-3 bg-secondary border border-border/30 rounded-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary transition-colors disabled:opacity-50"
+                  style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                />
+              </motion.div>
+
               {/* Email field */}
               <motion.div className="space-y-2" variants={itemVariants}>
                 <label
@@ -286,33 +335,42 @@ export default function LoginPage() {
                     {showPassword ? "HIDE" : "SHOW"}
                   </button>
                 </div>
-              </motion.div>
 
-              {/* Remember me & forgot password */}
-              <motion.div
-                className="flex flex-col sm:flex-row items-center justify-between text-sm gap-4"
-                variants={itemVariants}
-              >
-                <label className="flex items-center space-x-2 text-muted-foreground cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.remember}
-                    onChange={(e) =>
-                      setFormData({ ...formData, remember: e.target.checked })
-                    }
-                    className="w-4 h-4 bg-secondary border border-border/30 rounded-sm checked:bg-primary checked:border-primary"
-                  />
-                  <span style={{ fontFamily: "IBM Plex Mono, monospace" }}>
-                    Remember me
-                  </span>
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-primary hover:text-destructive transition-colors"
-                  style={{ fontFamily: "IBM Plex Mono, monospace" }}
-                >
-                  Forgot password?
-                </Link>
+                {/* Password Strength Indicator */}
+                {formData.password && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="mt-2"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-1 bg-secondary rounded-none overflow-hidden border border-border/20">
+                        <motion.div
+                          className={`h-full ${
+                            passwordStrength < 40
+                              ? "bg-primary"
+                              : passwordStrength < 70
+                              ? "bg-yellow-500"
+                              : "bg-green-500"
+                          }`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${passwordStrength}%` }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </div>
+                      <span
+                        className="text-xs text-muted-foreground"
+                        style={{ fontFamily: "IBM Plex Mono, monospace" }}
+                      >
+                        {passwordStrength < 40
+                          ? "WEAK"
+                          : passwordStrength < 70
+                          ? "MEDIUM"
+                          : "STRONG"}
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
 
               {/* Submit button */}
@@ -336,11 +394,11 @@ export default function LoginPage() {
                         ease: "linear",
                       }}
                     />
-                    <span>Authenticating...</span>
+                    <span>Creating Account...</span>
                   </>
                 ) : (
                   <>
-                    <span>Access System</span>
+                    <span>Create Account</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
@@ -361,20 +419,20 @@ export default function LoginPage() {
                 </div>
               </motion.div>
 
-              {/* Sign up link */}
+              {/* Login link */}
               <motion.div
                 className="text-center text-sm"
                 variants={itemVariants}
               >
                 <span className="text-muted-foreground">
-                  Don&apos;t have an account?{" "}
+                  Already have an account?{" "}
                 </span>
                 <Link
-                  href="/signup"
+                  href="/login"
                   className="text-primary hover:text-destructive transition-colors"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  Create one
+                  Sign in
                 </Link>
               </motion.div>
             </form>
@@ -388,7 +446,7 @@ export default function LoginPage() {
                 className="text-xs text-muted-foreground text-center"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
-                Protected by military-grade encryption
+                By signing up, you agree to our Terms and Privacy Policy
               </p>
             </motion.div>
           </motion.div>

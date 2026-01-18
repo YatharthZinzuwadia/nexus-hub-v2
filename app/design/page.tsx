@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import AIStudio from "../components/screens/AIStudio";
+import DesignSystemHub from "../components/screens/DesignSystemHub";
 
-export default function AIPage() {
+export default function DesignSystemPage() {
   const router = useRouter();
 
   const handleNavigate = (screen: string) => {
     router.push(`/${screen}`);
   };
 
-  return <AIStudio onNavigate={handleNavigate} />;
+  return <DesignSystemHub onNavigate={handleNavigate} />;
 }

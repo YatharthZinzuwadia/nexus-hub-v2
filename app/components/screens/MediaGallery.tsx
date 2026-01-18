@@ -81,33 +81,33 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-[#000000] overflow-hidden">
+    <div className="relative w-full h-screen bg-background overflow-hidden">
       {/* Grid pattern background */}
       <div className="absolute inset-0 grid-pattern opacity-20" />
 
       {/* Header */}
-      <div className="relative z-10 border-b border-[#525252]/30 bg-[#0A0A0A]/80 backdrop-blur-xl">
+      <div className="relative z-10 border-b border-border/30 bg-background/80 backdrop-blur-xl">
         <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => onNavigate("dashboard")}
-                className="p-2 hover:bg-[#1A1A1A] rounded-sm transition-colors"
+                className="p-2 hover:bg-secondary rounded-sm transition-colors"
               >
                 <ArrowLeft
-                  className="w-5 h-5 text-[#A3A3A3]"
+                  className="w-5 h-5 text-muted-foreground"
                   strokeWidth={1.5}
                 />
               </button>
               <div>
                 <h1
-                  className="text-xl text-[#FFFFFF]"
+                  className="text-xl text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   MEDIA_GALLERY
                 </h1>
                 <p
-                  className="text-xs text-[#525252]"
+                  className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   SOUNDBOARD_MODULE
@@ -117,22 +117,22 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
 
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto mt-4 md:mt-0">
               <div className="relative w-full md:w-auto">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search sounds..."
-                  className="w-full md:w-64 pl-10 pr-4 py-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#E5E5E5] placeholder-[#525252] focus:outline-none focus:border-[#DC2626] text-sm"
+                  className="w-full md:w-64 pl-10 pr-4 py-2 bg-secondary border border-border/30 rounded-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary text-sm"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 />
               </div>
 
-              <div className="flex items-center space-x-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm p-1">
+              <div className="flex items-center space-x-1 bg-secondary border border-border/30 rounded-sm p-1">
                 <button
                   onClick={() => setViewMode("grid")}
                   className={`p-2 rounded-sm transition-colors ${
                     viewMode === "grid"
-                      ? "bg-[#DC2626] text-[#FFFFFF]"
-                      : "text-[#A3A3A3] hover:text-[#FFFFFF]"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <Grid className="w-4 h-4" strokeWidth={1.5} />
@@ -141,8 +141,8 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
                   onClick={() => setViewMode("list")}
                   className={`p-2 rounded-sm transition-colors ${
                     viewMode === "list"
-                      ? "bg-[#DC2626] text-[#FFFFFF]"
-                      : "text-[#A3A3A3] hover:text-[#FFFFFF]"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <List className="w-4 h-4" strokeWidth={1.5} />
@@ -157,57 +157,57 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
       <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-8 py-8 h-[calc(100vh-80px)] overflow-y-auto">
         {/* Stats bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="terminal-glass p-4 rounded-sm border border-[#525252]/20">
+          <div className="terminal-glass p-4 rounded-sm border border-border/20">
             <div
-              className="text-xs text-[#A3A3A3] mb-1"
+              className="text-xs text-muted-foreground mb-1"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               TOTAL_SOUNDS
             </div>
             <div
-              className="text-2xl text-[#FFFFFF]"
+              className="text-2xl text-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               {soundEffects.length}
             </div>
           </div>
-          <div className="terminal-glass p-4 rounded-sm border border-[#525252]/20">
+          <div className="terminal-glass p-4 rounded-sm border border-border/20">
             <div
-              className="text-xs text-[#A3A3A3] mb-1"
+              className="text-xs text-muted-foreground mb-1"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               CATEGORIES
             </div>
             <div
-              className="text-2xl text-[#FFFFFF]"
+              className="text-2xl text-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               6
             </div>
           </div>
-          <div className="terminal-glass p-4 rounded-sm border border-[#525252]/20">
+          <div className="terminal-glass p-4 rounded-sm border border-border/20">
             <div
-              className="text-xs text-[#A3A3A3] mb-1"
+              className="text-xs text-muted-foreground mb-1"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               STORAGE
             </div>
             <div
-              className="text-2xl text-[#FFFFFF]"
+              className="text-2xl text-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               12.4MB
             </div>
           </div>
-          <div className="terminal-glass p-4 rounded-sm border border-[#525252]/20">
+          <div className="terminal-glass p-4 rounded-sm border border-border/20">
             <div
-              className="text-xs text-[#A3A3A3] mb-1"
+              className="text-xs text-muted-foreground mb-1"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               FORMAT
             </div>
             <div
-              className="text-2xl text-[#FFFFFF]"
+              className="text-2xl text-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
               WAV
@@ -218,7 +218,7 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
         {/* Sound effects list */}
         <div className="mb-4">
           <h2
-            className="text-lg text-[#FFFFFF] mb-4"
+            className="text-lg text-foreground mb-4"
             style={{ fontFamily: "IBM Plex Mono, monospace" }}
           >
             SOUND_EFFECTS
@@ -230,35 +230,35 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
             {soundEffects.map((sound) => (
               <div
                 key={sound.id}
-                className="group terminal-glass p-6 rounded-sm border border-[#525252]/20 hover:border-[#DC2626]/50 transition-all duration-300"
+                className="group terminal-glass p-6 rounded-sm border border-border/20 hover:border-primary/50 transition-all duration-300"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-[#FFFFFF] mb-1">{sound.name}</h3>
+                    <h3 className="text-foreground mb-1">{sound.name}</h3>
                     <p
-                      className="text-xs text-[#A3A3A3]"
+                      className="text-xs text-muted-foreground"
                       style={{ fontFamily: "IBM Plex Mono, monospace" }}
                     >
                       {sound.file}
                     </p>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <div className="w-1 h-4 bg-[#DC2626]" />
-                    <div className="w-1 h-6 bg-[#DC2626]" />
-                    <div className="w-1 h-3 bg-[#525252]" />
-                    <div className="w-1 h-5 bg-[#525252]" />
+                    <div className="w-1 h-4 bg-primary" />
+                    <div className="w-1 h-6 bg-primary" />
+                    <div className="w-1 h-3 bg-muted-foreground" />
+                    <div className="w-1 h-5 bg-muted-foreground" />
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between mb-4">
                   <span
-                    className="text-xs px-2 py-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#A3A3A3]"
+                    className="text-xs px-2 py-1 bg-secondary border border-border/30 rounded-sm text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     {sound.category}
                   </span>
                   <span
-                    className="text-xs text-[#A3A3A3]"
+                    className="text-xs text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
                     {sound.duration}
@@ -270,8 +270,8 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
                     onClick={() => handlePlay(sound.id)}
                     className={`flex-1 flex items-center justify-center space-x-2 py-2 rounded-sm transition-all ${
                       playing === sound.id
-                        ? "bg-[#DC2626] text-[#FFFFFF]"
-                        : "bg-[#0A0A0A] text-[#A3A3A3] hover:text-[#FFFFFF] border border-[#525252]/30"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground hover:text-foreground border border-border/30"
                     }`}
                   >
                     {playing === sound.id ? (
@@ -286,35 +286,35 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
                       {playing === sound.id ? "STOP" : "PLAY"}
                     </span>
                   </button>
-                  <button className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors">
-                    <Download className="w-4 h-4 text-[#A3A3A3]" />
+                  <button className="p-2 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors">
+                    <Download className="w-4 h-4 text-muted-foreground" />
                   </button>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="terminal-glass-strong rounded-sm border border-[#525252]/30 overflow-hidden">
+          <div className="terminal-glass-strong rounded-sm border border-border/30 overflow-hidden">
             <div className="overflow-x-auto">
               <table
                 className="w-full"
                 style={{ fontFamily: "IBM Plex Mono, monospace" }}
               >
                 <thead>
-                  <tr className="border-b border-[#525252]/30 bg-[#0A0A0A]">
-                    <th className="text-left px-6 py-3 text-xs text-[#A3A3A3]">
+                  <tr className="border-b border-border/30 bg-secondary">
+                    <th className="text-left px-6 py-3 text-xs text-muted-foreground">
                       NAME
                     </th>
-                    <th className="text-left px-6 py-3 text-xs text-[#A3A3A3]">
+                    <th className="text-left px-6 py-3 text-xs text-muted-foreground">
                       FILE
                     </th>
-                    <th className="text-left px-6 py-3 text-xs text-[#A3A3A3]">
+                    <th className="text-left px-6 py-3 text-xs text-muted-foreground">
                       CATEGORY
                     </th>
-                    <th className="text-left px-6 py-3 text-xs text-[#A3A3A3]">
+                    <th className="text-left px-6 py-3 text-xs text-muted-foreground">
                       DURATION
                     </th>
-                    <th className="text-right px-6 py-3 text-xs text-[#A3A3A3]">
+                    <th className="text-right px-6 py-3 text-xs text-muted-foreground">
                       ACTIONS
                     </th>
                   </tr>
@@ -323,22 +323,22 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
                   {soundEffects.map((sound, i) => (
                     <tr
                       key={sound.id}
-                      className={`border-b border-[#525252]/20 hover:bg-[#0A0A0A]/50 transition-colors ${
-                        i % 2 === 0 ? "" : "bg-[#0A0A0A]/20"
+                      className={`border-b border-border/20 hover:bg-secondary/50 transition-colors ${
+                        i % 2 === 0 ? "" : "bg-secondary/20"
                       }`}
                     >
-                      <td className="px-6 py-4 text-sm text-[#FFFFFF]">
+                      <td className="px-6 py-4 text-sm text-foreground">
                         {sound.name}
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#A3A3A3]">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {sound.file}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-xs px-2 py-1 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm text-[#A3A3A3]">
+                        <span className="text-xs px-2 py-1 bg-secondary border border-border/30 rounded-sm text-muted-foreground">
                           {sound.category}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#A3A3A3]">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {sound.duration}
                       </td>
                       <td className="px-6 py-4">
@@ -347,8 +347,8 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
                             onClick={() => handlePlay(sound.id)}
                             className={`p-2 rounded-sm transition-all ${
                               playing === sound.id
-                                ? "bg-[#DC2626] text-[#FFFFFF]"
-                                : "bg-[#0A0A0A] text-[#A3A3A3] hover:text-[#FFFFFF] border border-[#525252]/30"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-secondary text-muted-foreground hover:text-foreground border border-border/30"
                             }`}
                           >
                             {playing === sound.id ? (
@@ -357,8 +357,8 @@ const MediaGallery = ({ onNavigate }: MediaGalleryProps) => {
                               <Play className="w-4 h-4" />
                             )}
                           </button>
-                          <button className="p-2 bg-[#0A0A0A] border border-[#525252]/30 rounded-sm hover:border-[#DC2626]/50 transition-colors">
-                            <Download className="w-4 h-4 text-[#A3A3A3]" />
+                          <button className="p-2 bg-secondary border border-border/30 rounded-sm hover:border-primary/50 transition-colors">
+                            <Download className="w-4 h-4 text-muted-foreground" />
                           </button>
                         </div>
                       </td>
