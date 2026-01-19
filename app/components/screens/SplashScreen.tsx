@@ -117,9 +117,11 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   }, [onComplete]);
 
   return (
-    <div className="relative w-full h-screen bg-background flex items-center justify-center">
+    <div className="relative w-full min-h-screen bg-background flex items-center justify-center overflow-hidden py-8">
       {/* Particle field */}
-      <ParticleField density={300} interactive={true} />
+      <div className="absolute inset-0">
+        <ParticleField density={300} interactive={true} />
+      </div>
 
       {/* Grid background */}
       <div className="absolute inset-0 grid-pattern opacity-20" />
@@ -223,7 +225,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
 
         {/* Boot messages terminal */}
         <motion.div
-          className="terminal-glass rounded-sm p-5 sm:p-6 mb-8 min-h-45 sm:min-h-55 border border-border/30 relative overflow-hidden"
+          className="terminal-glass rounded-sm p-5 sm:p-6 mb-8 min-h-[200px] sm:min-h-[250px] border border-border/30 relative overflow-hidden"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}

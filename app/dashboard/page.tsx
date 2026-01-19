@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from "next/navigation";
 import PageTransition from "../components/effects/PageTransition";
 import MainDashboard from "../components/screens/MainDashboard";
+import DashboardShell from "../components/layout/DashboardShell";
 
 const DashboardPage = ({}) => {
   const router = useRouter();
@@ -13,9 +14,11 @@ const DashboardPage = ({}) => {
   };
 
   return (
-    <PageTransition transitionKey={pathname}>
-      <MainDashboard onNavigate={handleNavigate} />
-    </PageTransition>
+    <DashboardShell>
+      <PageTransition transitionKey={pathname}>
+        <MainDashboard onNavigate={handleNavigate} />
+      </PageTransition>
+    </DashboardShell>
   );
 };
 
