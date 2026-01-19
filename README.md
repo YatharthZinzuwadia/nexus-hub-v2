@@ -153,6 +153,15 @@ const { theme, setTheme } = useThemeStore();
 setTheme("light"); // or 'dark' or 'system'
 ```
 
+## 📱 Navigation Architecture
+
+The application uses a **Mobile-First** responsive navigation strategy:
+
+- **Desktop**: Persistent Sidebar with collapsible/expandable menu.
+- **Mobile**: Collapsible "Drawer" style menu accessed via Hamburger button.
+- **DashboardShell**: A unified layout wrapper (`app/components/layout/DashboardShell.tsx`) ensures consistent navigation state across all protected routes.
+- **System Map**: The "Motherboard" visualization on the dashboard serves as a secondary, interactive visual navigation method.
+
 ## 🛣️ Routes
 
 ### Public
