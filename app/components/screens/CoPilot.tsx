@@ -15,7 +15,7 @@ import { motion } from "motion/react";
 import { CarbonFiber } from "../effects/CarbonFiber";
 import ParticleField from "../effects/ParticleField";
 
-interface AIStudioProps {
+interface CoPilotProps {
   onNavigate: (screen: string) => void;
 }
 
@@ -26,7 +26,7 @@ interface Message {
   timestamp: Date;
 }
 
-const AIStudio = ({ onNavigate }: AIStudioProps) => {
+const CoPilot = ({ onNavigate }: CoPilotProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -61,10 +61,10 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCpuUsage((prev) =>
-        Math.min(100, Math.max(20, prev + (Math.random() - 0.5) * 10))
+        Math.min(100, Math.max(20, prev + (Math.random() - 0.5) * 10)),
       );
       setMemoryUsage((prev) =>
-        Math.min(100, Math.max(30, prev + (Math.random() - 0.5) * 8))
+        Math.min(100, Math.max(30, prev + (Math.random() - 0.5) * 8)),
       );
     }, 2000);
     return () => clearInterval(interval);
@@ -195,13 +195,13 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                   className="text-xl text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  AI_STUDIO
+                  CO_PILOT
                 </h1>
                 <p
                   className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  NEURAL_INTERFACE_v2.1.0
+                  AI_ASSISTANT_v2.1.0
                 </p>
               </div>
             </div>
@@ -387,8 +387,8 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
                     message.role === "system"
                       ? "bg-secondary border border-border/30 text-center"
                       : message.role === "user"
-                      ? "bg-gradient-to-br from-primary to-destructive text-primary-foreground"
-                      : "terminal-glass-strong border border-border/30"
+                        ? "bg-gradient-to-br from-primary to-destructive text-primary-foreground"
+                        : "terminal-glass-strong border border-border/30"
                   }`}
                   whileHover={{ scale: message.role !== "system" ? 1.02 : 1 }}
                 >
@@ -569,4 +569,4 @@ const AIStudio = ({ onNavigate }: AIStudioProps) => {
   );
 };
 
-export default AIStudio;
+export default CoPilot;

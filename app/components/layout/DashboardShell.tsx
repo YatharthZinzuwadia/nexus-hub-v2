@@ -7,8 +7,11 @@ import { usePathname } from "next/navigation";
 import {
   LayoutGrid,
   FolderGit2,
-  Sparkles,
-  ImageIcon,
+  FolderOpen,
+  Bot,
+  CheckSquare,
+  BarChart3,
+  Calendar,
   User,
   Cpu,
   Settings,
@@ -31,12 +34,16 @@ interface DashboardShellProps {
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid, code: "01" },
-  { label: "Projects", href: "/projects", icon: FolderGit2, code: "02" },
-  { label: "AI Studio", href: "/ai", icon: Sparkles, code: "03" },
-  { label: "Media Core", href: "/media", icon: ImageIcon, code: "04" },
-  { label: "Profile", href: "/profile", icon: User, code: "05" },
-  { label: "Design System", href: "/design", icon: Cpu, code: "06" },
-  { label: "Settings", href: "/settings", icon: Settings, code: "07" },
+  { label: "Files", href: "/files", icon: FolderOpen, code: "02" },
+  { label: "Co-Pilot", href: "/copilot", icon: Bot, code: "03" },
+  { label: "Projects", href: "/projects", icon: FolderGit2, code: "04" },
+  { label: "Tasks", href: "/tasks", icon: CheckSquare, code: "05" },
+  { label: "Analytics", href: "/analytics", icon: BarChart3, code: "06" },
+  { label: "Automation", href: "/automation", icon: Zap, code: "07" },
+  { label: "Calendar", href: "/calendar", icon: Calendar, code: "08" },
+  { label: "Profile", href: "/profile", icon: User, code: "09" },
+  { label: "Design System", href: "/design", icon: Cpu, code: "10" },
+  { label: "System", href: "/config", icon: Settings, code: "11" },
 ];
 
 export default function DashboardShell({ children }: DashboardShellProps) {

@@ -1,24 +1,23 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import MediaGallery from "../components/screens/MediaGallery";
+import Analytics from "../components/screens/Analytics";
 import DashboardShell from "../components/layout/DashboardShell";
 import PageTransition from "../components/effects/PageTransition";
 
-const MediaPage = () => {
+export default function AnalyticsPage() {
   const router = useRouter();
   const pathname = usePathname();
 
   const handleNavigate = (screen: string) => {
     router.push(`/${screen}`);
   };
+
   return (
     <DashboardShell>
       <PageTransition transitionKey={pathname}>
-        <MediaGallery onNavigate={handleNavigate} />
+        <Analytics onNavigate={handleNavigate} />
       </PageTransition>
     </DashboardShell>
   );
-};
-
-export default MediaPage;
+}

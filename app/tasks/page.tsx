@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import SettingsScreen from "../components/screens/SettingsScreen";
+import TaskManager from "../components/screens/TaskManager";
 import DashboardShell from "../components/layout/DashboardShell";
 import PageTransition from "../components/effects/PageTransition";
 
-export default function SettingsPage() {
+export default function TasksPage() {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -16,7 +16,7 @@ export default function SettingsPage() {
   return (
     <DashboardShell>
       <PageTransition transitionKey={pathname}>
-        <SettingsScreen onNavigate={handleNavigate} />
+        <TaskManager onNavigate={handleNavigate} />
       </PageTransition>
     </DashboardShell>
   );

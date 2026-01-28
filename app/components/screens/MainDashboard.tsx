@@ -9,9 +9,9 @@ import { motion } from "motion/react";
 import {
   Search,
   Bell,
-  ImageIcon,
+  FolderOpen,
   Cpu,
-  Sparkles,
+  Bot,
   User,
   Terminal,
   Activity,
@@ -22,6 +22,9 @@ import {
   LogOut,
   Sun,
   Moon,
+  CheckSquare,
+  BarChart3,
+  Calendar,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { type LucideIcon } from "lucide-react";
@@ -99,65 +102,83 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
   // Modules positioned like components on a motherboard
   const modules: Module[] = [
     {
-      id: "media",
-      icon: ImageIcon,
-      label: "Media Core",
-      screen: "media",
+      id: "files",
+      icon: FolderOpen,
+      label: "File Storage",
+      screen: "files",
       status: "online",
-      description: "STORAGE_MODULE",
-      position: { x: 15, y: 20 },
+      description: "STORAGE_VAULT",
+      position: { x: 15, y: 15 },
     },
     {
-      id: "ai",
-      icon: Sparkles,
-      label: "AI Processor",
-      screen: "ai",
+      id: "copilot",
+      icon: Bot,
+      label: "AI Co-Pilot",
+      screen: "copilot",
       status: "processing",
-      description: "NEURAL_UNIT",
-      position: { x: 50, y: 15 },
+      description: "NEURAL_CORE",
+      position: { x: 50, y: 12 },
     },
     {
       id: "projects",
       icon: FolderGit2,
-      label: "Project Array",
+      label: "Projects Hub",
       screen: "projects",
       status: "online",
-      description: "DATA_BANKS",
-      position: { x: 85, y: 25 },
+      description: "DEV_ARRAY",
+      position: { x: 85, y: 18 },
     },
     {
-      id: "profile",
-      icon: User,
-      label: "User Interface",
-      screen: "profile",
+      id: "tasks",
+      icon: CheckSquare,
+      label: "Task Manager",
+      screen: "tasks",
       status: "online",
-      description: "I/O_CONTROLLER",
-      position: { x: 20, y: 65 },
+      description: "WORKFLOW_ENGINE",
+      position: { x: 20, y: 45 },
     },
     {
-      id: "design-system",
-      icon: Cpu,
-      label: "Design Engine",
-      screen: "design",
+      id: "analytics",
+      icon: BarChart3,
+      label: "Analytics",
+      screen: "analytics",
       status: "online",
-      description: "RENDER_CORE",
-      position: { x: 80, y: 70 },
+      description: "DATA_INSIGHTS",
+      position: { x: 50, y: 50 },
     },
     {
-      id: "settings",
+      id: "automation",
+      icon: Zap,
+      label: "Automation",
+      screen: "automation",
+      status: "processing",
+      description: "AUTO_PILOT",
+      position: { x: 80, y: 48 },
+    },
+    {
+      id: "calendar",
+      icon: Calendar,
+      label: "Calendar",
+      screen: "calendar",
+      status: "online",
+      description: "TIME_SYNC",
+      position: { x: 25, y: 75 },
+    },
+    {
+      id: "config",
       icon: Settings,
       label: "System Config",
-      screen: "settings",
+      screen: "config",
       status: "idle",
-      description: "BIOS_SETTINGS",
-      position: { x: 50, y: 75 },
+      description: "CORE_SETTINGS",
+      position: { x: 75, y: 78 },
     },
   ];
 
   const quickStats = [
     { label: "UPTIME", value: "99.9%", icon: Activity },
     { label: "LATENCY", value: "<12ms", icon: Zap },
-    { label: "MODULES", value: "6/6", icon: Cpu },
+    { label: "MODULES", value: "8/8", icon: Cpu },
     { label: "STATUS", value: "NOMINAL", icon: Terminal },
   ];
 
@@ -478,8 +499,8 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                           module.status === "online"
                             ? "bg-[#22C55E]"
                             : module.status === "processing"
-                            ? "bg-[#F59E0B]"
-                            : "bg-muted-foreground"
+                              ? "bg-[#F59E0B]"
+                              : "bg-muted-foreground"
                         }`}
                         animate={{
                           scale: module.status !== "idle" ? [1, 1.3, 1] : 1,
@@ -526,8 +547,8 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
                         module.status === "online"
                           ? "bg-[#22C55E]"
                           : module.status === "processing"
-                          ? "bg-[#F59E0B]"
-                          : "bg-[#737373]"
+                            ? "bg-[#F59E0B]"
+                            : "bg-[#737373]"
                       }`}
                     />
                   </div>
