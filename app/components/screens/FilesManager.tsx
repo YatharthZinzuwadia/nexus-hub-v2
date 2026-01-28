@@ -165,7 +165,7 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
                   className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  STORAGE_VAULT_v2.0
+                  STORAGE_VAULT_v0.2.0
                 </p>
               </div>
             </div>

@@ -94,7 +94,7 @@ const Analytics = ({ onNavigate }: AnalyticsProps) => {
                   className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  DATA_INSIGHTS_v2.0
+                  DATA_INSIGHTS_v0.2.0
                 </p>
               </div>
             </div>

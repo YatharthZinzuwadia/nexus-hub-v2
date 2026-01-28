@@ -32,7 +32,7 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
       id: "1",
       role: "system",
       content:
-        "NexusAI v2.1.0 initialized. Neural pathways online. Quantum cores synchronized.",
+        "NexusAI v0.2.0 initialized. Neural pathways online. Quantum cores synchronized.",
       timestamp: new Date(),
     },
     {
@@ -201,7 +201,7 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
                   className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  AI_ASSISTANT_v2.1.0
+                  AI_ASSISTANT_v0.2.0
                 </p>
               </div>
             </div>

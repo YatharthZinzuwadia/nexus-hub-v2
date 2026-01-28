@@ -153,7 +153,7 @@ const SystemConfig = ({ onNavigate }: SystemConfigProps) => {
                   className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  CORE_SETTINGS_v2.0
+                  CORE_SETTINGS_v0.2.0
                 </p>
               </div>
             </div>
@@ -326,7 +326,7 @@ const SystemConfig = ({ onNavigate }: SystemConfigProps) => {
             >
               <div>
                 <div className="text-muted-foreground mb-1">Version</div>
-                <div className="text-foreground">v2.1.0</div>
+                <div className="text-foreground">v0.2.0</div>
               </div>
               <div>
                 <div className="text-muted-foreground mb-1">Build</div>

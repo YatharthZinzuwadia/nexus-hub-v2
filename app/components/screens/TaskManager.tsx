@@ -152,7 +152,7 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
                   className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  WORKFLOW_ENGINE_v2.0
+                  WORKFLOW_ENGINE_v0.2.0
                 </p>
               </div>
             </div>
