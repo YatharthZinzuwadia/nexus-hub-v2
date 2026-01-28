@@ -11,11 +11,11 @@ import {
   Terminal,
 } from "lucide-react";
 
-interface SettingsScreenProps {
+interface SystemConfigProps {
   onNavigate: (screen: string) => void;
 }
 
-const SettingsScreen = ({ onNavigate }: SettingsScreenProps) => {
+const SystemConfig = ({ onNavigate }: SystemConfigProps) => {
   const [notifications, setNotifications] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
   const [twoFactor, setTwoFactor] = useState(false);
@@ -147,13 +147,13 @@ const SettingsScreen = ({ onNavigate }: SettingsScreenProps) => {
                   className="text-xl text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  SYSTEM_SETTINGS
+                  SYSTEM_CONFIG
                 </h1>
                 <p
                   className="text-xs text-muted-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  CONFIGURATION_PANEL
+                  CORE_SETTINGS_v0.2.0
                 </p>
               </div>
             </div>
@@ -326,7 +326,7 @@ const SettingsScreen = ({ onNavigate }: SettingsScreenProps) => {
             >
               <div>
                 <div className="text-muted-foreground mb-1">Version</div>
-                <div className="text-foreground">v2.1.0</div>
+                <div className="text-foreground">v0.2.0</div>
               </div>
               <div>
                 <div className="text-muted-foreground mb-1">Build</div>
@@ -350,4 +350,4 @@ const SettingsScreen = ({ onNavigate }: SettingsScreenProps) => {
   );
 };
 
-export default SettingsScreen;
+export default SystemConfig;

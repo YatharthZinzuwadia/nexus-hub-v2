@@ -1,4 +1,4 @@
-<!-- THIS IS THE MASTER DOCUMENTATION> DO NOT MAINTAIN OR MAKE ANY OTHER DOCUMENTATION IN THE WHOLE PROJECT -->
+<!-- THIS IS THE MASTER DOCUMENTATION. DO NOT MAINTAIN OR MAKE ANY OTHER DOCUMENTATION IN THE WHOLE PROJECT -->
 
 # NexusHub v2 | Developer Operating System
 
@@ -6,20 +6,20 @@
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.0.10-black?style=flat-square&logo=next.js)
 ![React](https://img.shields.io/badge/React-19.2.1-61DAFB?style=flat-square&logo=react)
-![Supabase](https://img.shields.io/badge/Supabase-Auth-3ECF8E?style=flat-square&logo=supabase)
+![Supabase](https://img.shields.io/badge/Supabase-Auth_Only-3ECF8E?style=flat-square&logo=supabase)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.0-38B2AC?style=flat-square&logo=tailwind-css)
 
 ## ✨ Features
 
-- 🔐 **Production-Ready Authentication** - Supabase Auth with email/password
-- 🎨 **Dark/Light Mode** - Smooth theme transitions with system preference detection
+- 🔐 **Authentication** - Supabase Auth (email/password only)
+- 🎨 **Dark/Light Mode** - Smooth theme transitions with system preference
 - 🎭 **Heavy Animations** - Framer Motion powered interactions
-- 🛡️ **Route Protection** - Middleware-based authentication guards
-- 📦 **State Management** - Zustand for auth and theme state
+- 🛡️ **Route Protection** - Middleware-based auth guards
+- 📦 **State Management** - Zustand for auth and theme
 - 🎯 **Terminal Aesthetic** - Retro programmer-inspired design
 - 🚀 **Fully Typed** - TypeScript throughout
-- 📱 **Responsive** - Works on all devices
+- 📱 **Responsive** - Mobile-first design
 
 ## 🚀 Quick Start
 
@@ -46,15 +46,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the app.
-
-## 📚 Documentation
-
-- **[AUTH_SETUP_GUIDE.md](./AUTH_SETUP_GUIDE.md)** - Complete Supabase setup instructions
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture and data flow
-- **[AUTH_COMPLETE.md](./AUTH_COMPLETE.md)** - Implementation summary and next steps
-- **[CORE_DOMAIN.md](./CORE_DOMAIN.md)** - Domain model definitions
-- **[PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md)** - Full project documentation
+Open [http://localhost:3000](http://localhost:3000)
 
 ## 🏗️ Tech Stack
 
@@ -68,15 +60,16 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 ### Authentication & Database
 
 - **Supabase** - Backend as a Service
-  - Auth (email/password, social)
-  - PostgreSQL database
-  - Row Level Security (RLS)
+  - **Auth ONLY** - Email/password authentication
+  - **PostgreSQL** - Database configured but NOT used
+  - **No RLS policies** - No data stored in Supabase
+  - **No server actions** - Pure client-side auth
 
 ### State Management
 
 - **Zustand** - Lightweight state management
-  - Auth state
-  - Theme state
+  - Auth state (mirrors Supabase session)
+  - Theme state (persisted to localStorage)
 
 ### Animations
 
@@ -96,15 +89,20 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 ```
 nexus-hub-v2/
 ├── app/                      # Next.js App Router
-│   ├── login/               # Login page
-│   ├── signup/              # Signup page
+│   ├── login/               # Login page (Supabase auth)
+│   ├── signup/              # Signup page (Supabase auth)
 │   ├── dashboard/           # Protected dashboard
-│   ├── profile/             # User profile
-│   ├── projects/            # Projects page
-│   ├── ai/                  # AI Studio
-│   ├── media/               # Media gallery
-│   ├── settings/            # Settings
+│   ├── files/               # File manager (UI only)
+│   ├── copilot/             # AI assistant (UI only)
+│   ├── projects/            # Projects hub (UI only)
+│   ├── tasks/               # Task manager (UI only)
+│   ├── analytics/           # Analytics dashboard (UI only)
+│   ├── automation/          # Automation (placeholder)
+│   ├── calendar/            # Calendar (placeholder)
+│   ├── profile/             # User profile (UI only)
+│   ├── config/              # System config (UI only)
 │   ├── design/              # Design system
+│   ├── onboarding/          # Onboarding flow
 │   ├── layout.tsx           # Root layout with providers
 │   └── globals.css          # Global styles + themes
 ├── lib/
@@ -137,6 +135,14 @@ AuthProvider syncs to Zustand
 Components access user state
 ```
 
+**Files with Supabase Integration:**
+
+- `app/login/page.tsx` - Login form (auth.signInWithPassword)
+- `app/signup/page.tsx` - Signup form (auth.signUp)
+- `app/components/layout/DashboardShell.tsx` - Logout button (auth.signOut)
+- `app/components/screens/MainDashboard.tsx` - Logout button (auth.signOut)
+- `lib/providers/auth-provider.tsx` - Session sync (auth.onAuthStateChange)
+
 ## 🎨 Theme System
 
 - **Dark Mode** (default) - Terminal black with red accents
@@ -153,21 +159,12 @@ const { theme, setTheme } = useThemeStore();
 setTheme("light"); // or 'dark' or 'system'
 ```
 
-## 📱 Navigation Architecture
-
-The application uses a **Mobile-First** responsive navigation strategy:
-
-- **Desktop**: Persistent Sidebar with collapsible/expandable menu.
-- **Mobile**: Collapsible "Drawer" style menu accessed via Hamburger button.
-- **DashboardShell**: A unified layout wrapper (`app/components/layout/DashboardShell.tsx`) ensures consistent navigation state across all protected routes.
-- **System Map**: The "Motherboard" visualization on the dashboard serves as a secondary, interactive visual navigation method.
-
-## 🛣️ Routes
+## 🛣️ Routes (18 Total)
 
 ### Public
 
 - `/` - Splash screen
-- `/onboarding/*` - Onboarding flow
+- `/onboarding/*` - Onboarding flow (welcome, features, cta)
 
 ### Auth (redirect if authenticated)
 
@@ -176,30 +173,58 @@ The application uses a **Mobile-First** responsive navigation strategy:
 
 ### Protected (require authentication)
 
-- `/dashboard` - Main dashboard
-- `/profile` - User profile
-- `/projects` - Project repository
-- `/ai` - AI Studio
-- `/media` - Media gallery
-- `/settings` - Settings
-- `/design` - Design system
+- `/dashboard` - Main dashboard with motherboard visualization
+- `/files` - File manager (UI only, no upload)
+- `/copilot` - AI assistant (UI only, no real AI)
+- `/projects` - Projects hub (UI only, no data)
+- `/tasks` - Task manager with Kanban board (UI only, no persistence)
+- `/analytics` - Analytics dashboard (UI only, mock data)
+- `/automation` - Automation hub (placeholder)
+- `/calendar` - Calendar (placeholder)
+- `/profile` - User profile (UI only)
+- `/config` - System configuration (UI only)
+- `/design` - Design system showcase
 
-## 🧪 Testing
+## 📊 Backend Status Report
 
-### Test Auth Flow
+### ✅ IMPLEMENTED (Supabase Auth Only)
 
-1. Start dev server: `yarn dev`
-2. Navigate to `/signup`
-3. Create account
-4. Verify in Supabase dashboard
-5. Test login
-6. Test session persistence (refresh page)
-7. Test logout
+- **Authentication**: Email/password signup, login, logout
+- **Session Management**: Cookie-based sessions with middleware validation
+- **User State**: Synced to Zustand for UI reactivity
 
-### Test Route Protection
+### ❌ NOT IMPLEMENTED (Pure Frontend)
 
-- Try accessing `/dashboard` while logged out → redirects to `/login`
-- Try accessing `/login` while logged in → redirects to `/dashboard`
+All modules are **UI-only** with **mock/hardcoded data**:
+
+| Module     | Status      | Data Source                      |
+| ---------- | ----------- | -------------------------------- |
+| Files      | UI only     | Hardcoded file list in component |
+| Co-Pilot   | UI only     | Mock AI responses                |
+| Projects   | UI only     | Hardcoded project cards          |
+| Tasks      | UI only     | Hardcoded tasks/notes in state   |
+| Analytics  | UI only     | Mock metrics and charts          |
+| Automation | Placeholder | Coming soon                      |
+| Calendar   | Placeholder | Coming soon                      |
+| Profile    | UI only     | No user data stored              |
+| Config     | UI only     | Settings not persisted           |
+
+### 🗄️ Database Usage
+
+- **Supabase PostgreSQL**: Configured but **NOT USED**
+- **No tables created**
+- **No RLS policies**
+- **No server actions**
+- **No API routes**
+- **No data persistence** (except auth sessions in cookies)
+
+### 🔌 Backend Architecture
+
+- **100% Client-Side** (except auth)
+- **No server components** fetching data
+- **No database queries** outside auth
+- **No file uploads** to storage
+- **No real-time subscriptions**
 
 ## 📦 Scripts
 
@@ -225,9 +250,16 @@ yarn lint         # Run ESLint
 
 Ensure Node.js 18+ and set environment variables.
 
-## 🐛 Troubleshooting
+## 🔮 Future Backend Integration
 
-See [AUTH_SETUP_GUIDE.md](./AUTH_SETUP_GUIDE.md#troubleshooting) for common issues and solutions.
+To add real backend functionality:
+
+1. **Create Supabase Tables** for projects, tasks, files, etc.
+2. **Add RLS Policies** for row-level security
+3. **Replace Mock Data** with Supabase queries
+4. **Add Server Actions** for mutations
+5. **Enable Storage** for file uploads
+6. **Add Real-Time** subscriptions for live updates
 
 ## 📝 License
 

@@ -128,7 +128,7 @@ const OnboardingWelcome = ({ onNext, onSkip }: OnboardingWelcomeProps) => {
                   className="text-muted-foreground text-xs"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  SYSTEM_ONLINE • v2.1.0
+                  SYSTEM_ONLINE • v0.2.0
                 </span>
               </div>
             </motion.div>

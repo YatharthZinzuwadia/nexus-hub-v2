@@ -104,7 +104,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                   className="text-muted-foreground text-sm"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  v2.1.0
+                  v0.2.0
                 </p>
               </div>
             </motion.div>

@@ -68,7 +68,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   const [bootMessages, setBootMessages] = useState<string[]>([]);
 
   const bootSequence = [
-    "> Initializing NexusHub v2.1.0...",
+    "> Initializing NexusHub v0.2.0...",
     "> Loading core modules...",
     "> Mounting file systems... [OK]",
     "> Starting network services... [OK]",
@@ -176,7 +176,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
               className="text-muted-foreground text-xs sm:text-sm mt-1"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
             >
-              v2.1.0 • Build 20251213 • AI-Enhanced
+              v0.2.0 • Build 20260129 • AI-Enhanced
             </motion.p>
           </div>
         </motion.div>
