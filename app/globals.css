@@ -197,8 +197,11 @@ body {
 .theme-transition *,
 .theme-transition *::before,
 .theme-transition *::after {
-  transition: background-color 0.3s ease, color 0.3s ease,
-    border-color 0.3s ease, box-shadow 0.3s ease !important;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease !important;
 }
 
 @layer base {
@@ -308,10 +311,8 @@ body {
 
   /* Grid pattern background */
   .grid-pattern {
-    background-image: linear-gradient(
-        rgba(115, 115, 115, 0.3) 1px,
-        transparent 1px
-      ),
+    background-image:
+      linear-gradient(rgba(115, 115, 115, 0.3) 1px, transparent 1px),
       linear-gradient(90deg, rgba(115, 115, 115, 0.3) 1px, transparent 1px);
     background-size: 20px 20px;
   }
