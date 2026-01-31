@@ -54,6 +54,10 @@ const COLOR_WIRE_IDLE = "#4B5563"; // Grey-600
 const COLOR_DARK_METAL = "#111111"; // Almost black
 const COLOR_PCB = "#050505"; // Pitch black
 
+// Border Styles
+const BORDER_COLOR = "#b91c1c"; // Intense red for edges
+const BORDER_THRESHOLD = 20;
+
 const mapPosTo3D = (x: number, y: number) => {
   return new Vector3(
     (x / 100) * BOARD_WIDTH - BOARD_WIDTH / 2,
@@ -140,9 +144,10 @@ const WireBundle = ({
         <tubeGeometry args={[curve, 64, 0.08, 6, false]} />
         <meshStandardMaterial
           color={COLOR_WIRE_IDLE}
-          roughness={0.5}
-          metalness={0.5}
+          roughness={0.4}
+          metalness={0.6}
         />
+        {/* Accent Line on wires? Maybe too expensive. skipping for perf */}
       </mesh>
 
       {/* Inner Core */}
@@ -284,7 +289,7 @@ const RAMBank = ({ position }: { position: Vector3 }) => {
               metalness={0.7}
               roughness={0.3}
             />
-            <Edges color="#444" threshold={20} />
+            <Edges color={BORDER_COLOR} threshold={20} />
           </mesh>
           {/* Gold Contacts */}
           <mesh position={[0, -0.7, 0]}>
@@ -305,6 +310,7 @@ const RAMBank = ({ position }: { position: Vector3 }) => {
             <mesh key={j} position={[0.12, 0, z]}>
               <boxGeometry args={[0.05, 0.8, 0.8]} />
               <meshStandardMaterial color="#111" />
+              <Edges color="#333" />
             </mesh>
           ))}
         </group>
@@ -326,6 +332,7 @@ const CoolingFan = ({ position }: { position: Vector3 }) => {
       <mesh position={[0, 0.5, 0]} castShadow>
         <cylinderGeometry args={[2.2, 2.2, 1, 32]} />
         <meshStandardMaterial color="#111" metalness={0.6} roughness={0.5} />
+        <Edges color={BORDER_COLOR} threshold={30} />
       </mesh>
       <mesh position={[0, 0.5, 0]}>
         <cylinderGeometry args={[2, 2, 1.1, 32]} />
@@ -361,6 +368,7 @@ const CoolingFan = ({ position }: { position: Vector3 }) => {
           transparent
           opacity={0.8}
         />
+        <Edges color="#555" />
       </mesh>
     </group>
   );
@@ -404,7 +412,7 @@ const ChipModule = ({
       <mesh position={[0, 0.15, 0]} receiveShadow castShadow>
         <boxGeometry args={[baseSize + 0.4, 0.3, baseSize + 0.4]} />
         <meshStandardMaterial color="#1a1a1a" metalness={0.5} roughness={0.7} />
-        <Edges color="#333" />
+        <Edges color="#555" />
       </mesh>
 
       <group
@@ -425,10 +433,15 @@ const ChipModule = ({
           <boxGeometry args={[baseSize, 0.6, baseSize]} />
           <meshStandardMaterial
             color="#111111"
-            roughness={0.3}
-            metalness={0.5}
+            roughness={0.1}
+            metalness={0.8}
+            envMapIntensity={2}
           />
-          <Edges color={isHovered ? COLOR_ACCENT_RED : "#444"} threshold={20} />
+          {/* ACCENTED BORDER */}
+          <Edges
+            color={isHovered ? COLOR_ACCENT_RED : BORDER_COLOR}
+            threshold={15}
+          />
         </mesh>
 
         {/* Red Accent Corner */}
@@ -492,30 +505,34 @@ export default function MotherboardScene({
   return (
     <div className="relative w-full h-full min-h-[500px] bg-black overflow-hidden rounded-lg border border-white/5">
       <Canvas shadows dpr={[1, 1.5]} gl={{ antialias: true }}>
-        <PerspectiveCamera makeDefault position={[0, 25, 20]} fov={35} />
+        <PerspectiveCamera makeDefault position={[0, 35, 30]} fov={30} />
 
         <color attach="background" args={["#050505"]} />
         <fog attach="fog" args={["#050505", 25, 80]} />
 
-        {/* Lighting - Stark Industrial */}
-        <ambientLight intensity={0.4} />
+        {/* Lighting - Stark Industrial Top-Down */}
+        <ambientLight intensity={5} />
+        {/* Main Overhead Light for Reflections */}
         <directionalLight
           position={[10, 20, 5]}
-          intensity={1.5}
+          intensity={0.6}
           color="#ffffff"
           castShadow
+          shadow-bias={-0.0001}
         />
+        {/* Side Fill - Red Accent */}
         <pointLight
-          position={[-10, 10, -10]}
-          intensity={1}
+          position={[-20, 10, -20]}
+          intensity={2}
           color={COLOR_ACCENT_RED}
-          distance={30}
+          distance={50}
         />
+        {/* Side Fill - Cold White */}
         <pointLight
-          position={[10, 5, 10]}
-          intensity={0.5}
-          color={COLOR_ACCENT_WHITE}
-          distance={30}
+          position={[20, 15, 20]}
+          intensity={1}
+          color="#e0f2fe"
+          distance={50}
         />
 
         {/* Subtle Dust - White only */}
@@ -529,7 +546,7 @@ export default function MotherboardScene({
         />
 
         <group>
-          {/* Main Board - Pitch Black Glossy */}
+          {/* Main Board - Pitch Black Glossy Glassy */}
           <mesh
             rotation={[-Math.PI / 2, 0, 0]}
             position={[0, -0.1, 0]}
@@ -540,15 +557,17 @@ export default function MotherboardScene({
               blur={[400, 100]}
               resolution={1024}
               mixBlur={1}
-              mixStrength={80}
-              roughness={0.4}
+              mixStrength={60}
+              roughness={0.15} // Glassy
               depthScale={1}
               minDepthThreshold={0.5}
               maxDepthThreshold={1.2}
-              color="#080808"
-              metalness={0.8}
+              color="#080808" // Slightly lighter than pure black to catch reflections
+              metalness={0.9}
               mirror={0}
             />
+            {/* Edge of board */}
+            <Edges color="#333" threshold={1} />
           </mesh>
 
           {/* Massive Component Fields */}
@@ -569,6 +588,7 @@ export default function MotherboardScene({
               metalness={0.8}
               roughness={0.4}
             />
+            <Edges color={BORDER_COLOR} />
           </mesh>
           {/* Metal Fins on top */}
           {Array.from({ length: 20 }).map((_, i) => (
@@ -607,6 +627,7 @@ export default function MotherboardScene({
               <mesh position={[0, 0.1, 0]} receiveShadow>
                 <cylinderGeometry args={[4, 4.2, 0.2, 8]} />
                 <meshStandardMaterial color="#333" />
+                <Edges color={BORDER_COLOR} />
               </mesh>
               {/* Red data ring */}
               <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.22, 0]}>
@@ -623,7 +644,7 @@ export default function MotherboardScene({
         <BakeShadows />
         <OrbitControls
           enableZoom={true}
-          maxDistance={40}
+          maxDistance={50}
           minDistance={10}
           maxPolarAngle={Math.PI / 2.5}
           minPolarAngle={Math.PI / 6}
