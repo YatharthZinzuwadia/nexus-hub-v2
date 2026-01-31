@@ -34,6 +34,11 @@ import { useRouter } from "next/navigation";
 import { useThemeStore } from "@/lib/store/theme-store";
 import { useAuthStore } from "@/lib/store/auth-store";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
+
+const MotherboardScene = dynamic(() => import("../3d/MotherboardScene"), {
+  ssr: false,
+});
 
 interface MainDashboardProps {
   onNavigate: (screen: string) => void;
@@ -341,187 +346,14 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
             </div>
           </div>
 
-          {/* Circuit Graphics - Desktop */}
-          <div className="relative h-96 lg:h-125 terminal-glass-strong rounded-sm border border-border/30 overflow-hidden hidden md:block">
-            {/* Circuit traces background pattern */}
-            <svg
-              className="absolute inset-0 w-full h-full opacity-20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <pattern
-                  id="circuit"
-                  x="0"
-                  y="0"
-                  width="100"
-                  height="100"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <line
-                    x1="0"
-                    y1="50"
-                    x2="100"
-                    y2="50"
-                    stroke="currentColor"
-                    className="text-border"
-                    strokeWidth="1"
-                  />
-                  <line
-                    x1="50"
-                    y1="0"
-                    x2="50"
-                    y2="100"
-                    stroke="currentColor"
-                    className="text-border"
-                    strokeWidth="1"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="3"
-                    fill="currentColor"
-                    className="text-border"
-                  />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#circuit)" />
-            </svg>
-
-            {/* Connection Lines */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {modules.map((module, i) => {
-                const nextModule = modules[(i + 1) % modules.length];
-                const x1 = `${module.position.x}%`;
-                const y1 = `${module.position.y}%`;
-                const x2 = `${nextModule.position.x}%`;
-                const y2 = `${nextModule.position.y}%`;
-
-                return (
-                  <g key={`connection-${i}`}>
-                    <motion.line
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
-                      stroke="var(--primary)"
-                      strokeWidth="2"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: 0.3 }}
-                      transition={{ duration: 2, delay: i * 0.2 }}
-                    />
-                    <motion.circle
-                      r="4"
-                      fill="var(--primary)"
-                      initial={{ offsetDistance: "0%" }}
-                      animate={{ offsetDistance: "100%" }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        delay: i * 0.5,
-                        ease: "linear",
-                      }}
-                      style={{
-                        offsetPath: `path("M ${x1} ${y1} L ${x2} ${y2}")`,
-                        offsetDistance: "0%",
-                      }}
-                    />
-                  </g>
-                );
-              })}
-            </svg>
-
-            {/* Modules (Clickable) */}
-            {modules.map((module, index) => {
-              const Icon = module.icon;
-              return (
-                <motion.button
-                  key={module.id}
-                  onClick={() => onNavigate(module.screen)}
-                  onMouseEnter={() => setHoveredModule(module.id)}
-                  onMouseLeave={() => setHoveredModule(null)}
-                  className="absolute group"
-                  style={{
-                    left: `${module.position.x}%`,
-                    top: `${module.position.y}%`,
-                    transform: "translate(-50%, -50%)",
-                  }}
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{
-                    duration: 0.8,
-                    delay: 0.7 + index * 0.1,
-                    type: "spring",
-                    stiffness: 200,
-                  }}
-                  whileHover={{ scale: 1.15, z: 50 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <motion.div
-                    className="absolute -inset-8 bg-primary rounded-full blur-xl"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: hoveredModule === module.id ? 0.4 : 0 }}
-                  />
-
-                  <div className="relative terminal-glass-strong p-6 rounded-sm border-2 border-border/30 group-hover:border-primary transition-all duration-300">
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex space-x-1">
-                      {[0, 1, 2].map((i) => (
-                        <div
-                          key={i}
-                          className="w-1 h-2 bg-muted-foreground rounded-sm"
-                        />
-                      ))}
-                    </div>
-
-                    <Icon
-                      className="w-8 h-8 text-primary mb-2"
-                      strokeWidth={1.5}
-                    />
-
-                    <div
-                      className="text-xs text-foreground mb-1 whitespace-nowrap"
-                      style={{ fontFamily: "IBM Plex Mono, monospace" }}
-                    >
-                      {module.label}
-                    </div>
-                    <div
-                      className="text-[10px] text-muted-foreground mb-2"
-                      style={{ fontFamily: "IBM Plex Mono, monospace" }}
-                    >
-                      {module.description}
-                    </div>
-
-                    <div className="flex items-center justify-center space-x-1">
-                      <motion.div
-                        className={`w-2 h-2 rounded-full ${
-                          module.status === "online"
-                            ? "bg-[#22C55E]"
-                            : module.status === "processing"
-                              ? "bg-[#F59E0B]"
-                              : "bg-muted-foreground"
-                        }`}
-                        animate={{
-                          scale: module.status !== "idle" ? [1, 1.3, 1] : 1,
-                          opacity: module.status !== "idle" ? [1, 0.5, 1] : 1,
-                        }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
-                    </div>
-
-                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
-                      {[0, 1, 2].map((i) => (
-                        <div
-                          key={i}
-                          className="w-1 h-2 bg-muted-foreground rounded-sm"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </motion.button>
-              );
-            })}
+          {/* Circuit Graphics - Desktop (3D) */}
+          <div className="relative h-96 lg:h-125 hidden md:block">
+            <MotherboardScene
+              modules={modules}
+              onNavigate={onNavigate}
+              hoveredModule={hoveredModule}
+              setHoveredModule={setHoveredModule}
+            />
           </div>
 
           {/* Quick Links Grid - Mobile */}
