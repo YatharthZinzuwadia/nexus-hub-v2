@@ -122,7 +122,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
       screen: "copilot",
       status: "processing",
       description: "NEURAL_CORE",
-      position: { x: 50, y: 12 },
+      position: { x: 50, y: 50 }, // Central position
     },
     {
       id: "projects",
@@ -149,7 +149,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
       screen: "analytics",
       status: "online",
       description: "DATA_INSIGHTS",
-      position: { x: 50, y: 50 },
+      position: { x: 50, y: 12 }, // Moved to top
     },
     {
       id: "automation",
@@ -347,7 +347,7 @@ const MainDashboard = ({ onNavigate }: MainDashboardProps) => {
           </div>
 
           {/* Circuit Graphics - Desktop (3D) */}
-          <div className="relative h-96 lg:h-125 hidden md:block">
+          <div className="relative h-[600px] hidden md:block">
             <MotherboardScene
               modules={modules}
               onNavigate={onNavigate}
