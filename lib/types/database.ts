@@ -122,6 +122,7 @@ export interface Project {
   demo_url: string | null;
   github_url: string | null;
   npm_url: string | null;
+  featured_image: string | null; // Main project image/asset URL
 
   // Status
   status: ProjectStatus;
