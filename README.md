@@ -6,13 +6,16 @@
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.0.10-black?style=flat-square&logo=next.js)
 ![React](https://img.shields.io/badge/React-19.2.1-61DAFB?style=flat-square&logo=react)
-![Supabase](https://img.shields.io/badge/Supabase-Auth_Only-3ECF8E?style=flat-square&logo=supabase)
+![Supabase](https://img.shields.io/badge/Supabase-Full_Backend-3ECF8E?style=flat-square&logo=supabase)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.0-38B2AC?style=flat-square&logo=tailwind-css)
 
 ## ✨ Features
 
-- 🔐 **Authentication** - Supabase Auth (email/password only)
+- 🔐 **Authentication** - Supabase Auth (email/password + OAuth ready)
+- 🗄️ **Database** - PostgreSQL with full CRUD operations
+- 📦 **File Storage** - Supabase Storage with CDN delivery
+- ⚡ **Real-time** - Live updates via Supabase subscriptions (coming soon)
 - 🎨 **Dark/Light Mode** - Smooth theme transitions with system preference
 - 🎭 **Heavy Animations** - Framer Motion powered interactions
 - 🛡️ **Route Protection** - Middleware-based auth guards
