@@ -427,7 +427,7 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
 
           <section className="pt-6 border-t border-border/10">
             <div className="flex items-center space-x-2 text-muted-foreground/30 text-[10px] font-medium">
-              <info className="w-3 h-3" />
+              <Info className="w-3 h-3" />
               <span>Version 2.4.1</span>
             </div>
           </section>
