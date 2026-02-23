@@ -30,6 +30,7 @@ import {
   Plus,
   Loader2,
   AlertCircle,
+  Move,
 } from "lucide-react";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { CarbonFiber } from "../effects/CarbonFiber";
@@ -41,6 +42,7 @@ import {
   createFolder,
   deleteFile,
   getDownloadUrl,
+  updateFile,
 } from "@/lib/api/files";
 import type { File as DBFile } from "@/lib/types/database";
 import { toast } from "sonner";
@@ -50,7 +52,7 @@ interface FilesManagerProps {
   onNavigate: (screen: string) => void;
 }
 
-type ModalType = "upload" | "new_folder" | "details" | "delete" | null;
+type ModalType = "upload" | "new_folder" | "details" | "delete" | "move" | null;
 
 // --- HELPERS ---
 const formatSize = (bytes: number) => {
@@ -93,21 +95,14 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
   const [newFolderName, setNewFolderName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // --- QUURIES ---
-  const {
-    data: files = [],
-    isLoading: isFilesLoading,
-    refetch: refetchFiles,
-  } = useQuery({
+  // --- QUERIES ---
+  const { data: files = [], isLoading: isFilesLoading } = useQuery({
     queryKey: ["files", user?.id, currentFolderId],
     queryFn: () =>
       user ? getFiles(user.id, currentFolderId) : Promise.resolve([]),
     enabled: !!user,
   });
 
-  // Breadcrumbs calculation (needs all files ideally, or we fetch parents)
-  // For now, we'll keep it simple: if we are deep, we might lose the chain unless we fetch parent info.
-  // Advanced: Fetch folder info for currentFolderId to build breadcrumbs.
   const { data: currentFolder } = useQuery({
     queryKey: ["folder", currentFolderId],
     queryFn: async () => {
@@ -123,13 +118,27 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
     enabled: !!currentFolderId,
   });
 
+  // Fetch all potential destination folders for moving
+  const { data: allFolders = [] } = useQuery({
+    queryKey: ["all-folders", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await (await import("@/lib/supabase/client"))
+        .createClient()
+        .from("files")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("type", "folder");
+      return (data || []) as DBFile[];
+    },
+    enabled: activeModal === "move",
+  });
+
   const breadcrumbs = useMemo(() => {
     const list: { id: string | null; name: string }[] = [
       { id: null, name: "Home" },
     ];
     if (currentFolder) {
-      // Note: This only shows current folder. For full breadcrumbs,
-      // recursive fetching or path string in DB is needed.
       list.push({ id: currentFolder.id, name: currentFolder.name });
     }
     return list;
@@ -143,12 +152,11 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
         : Promise.reject("No user"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["files"] });
-      toast.success("Folder created successfully");
+      toast.success("Folder created");
       setActiveModal(null);
       setNewFolderName("");
     },
-    onError: (error: any) =>
-      toast.error(error.message || "Failed to create folder"),
+    onError: (error: any) => toast.error(error.message),
   });
 
   const uploadFileMutation = useMutation({
@@ -158,21 +166,37 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
         : Promise.reject("No user"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["files"] });
-      toast.success("File uploaded successfully");
+      toast.success("File uploaded");
       setActiveModal(null);
     },
-    onError: (error: any) => toast.error(error.message || "Upload failed"),
+    onError: (error: any) => toast.error(error.message),
   });
 
   const deleteFileMutation = useMutation({
     mutationFn: (file: DBFile) => deleteFile(file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["files"] });
-      toast.success("File deleted");
+      toast.success("Deleted successfully");
       setActiveModal(null);
       setSelectedFileId(null);
     },
-    onError: (error: any) => toast.error(error.message || "Delete failed"),
+    onError: (error: any) => toast.error(error.message),
+  });
+
+  const moveFileMutation = useMutation({
+    mutationFn: ({
+      fileId,
+      targetFolderId,
+    }: {
+      fileId: string;
+      targetFolderId: string | null;
+    }) => updateFile(fileId, { parent_folder_id: targetFolderId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["files"] });
+      toast.success("Item moved");
+      setActiveModal(null);
+    },
+    onError: (error: any) => toast.error(error.message),
   });
 
   // --- DERIVED STATE ---
@@ -197,7 +221,6 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
 
   const handleGoBack = () => {
     if (currentFolderId) {
-      // In a real app, you'd jump to currentFolder.parent_folder_id
       setCurrentFolderId(currentFolder?.parent_folder_id || null);
     } else {
       onNavigate("dashboard");
@@ -209,18 +232,23 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
     if (file) uploadFileMutation.mutate(file);
   };
 
+  const handleShare = async (file: DBFile) => {
+    try {
+      const url = await getDownloadUrl(file);
+      await navigator.clipboard.writeText(url);
+      toast.success("Sharing link copied to clipboard!");
+    } catch (err: any) {
+      toast.error("Failed to generate sharing link");
+    }
+  };
+
   const handleDownload = async (file: DBFile) => {
     try {
       const url = await getDownloadUrl(file);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = file.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      window.open(url, "_blank");
       toast.success("Download started");
     } catch (err: any) {
-      toast.error(err.message || "Download failed");
+      toast.error(err.message);
     }
   };
 
@@ -240,18 +268,12 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
     return FileIcon;
   };
 
-  // Mock stats (could be fetched via aggregate query)
-  const storageUsed = 0.4;
-  const storageTotal = 5.0;
-  const storagePercent = (storageUsed / storageTotal) * 100;
-
   return (
     <div className="relative w-full h-screen bg-background overflow-hidden flex flex-col">
       <ParticleField density={25} />
       <CarbonFiber className="w-48" opacity={0.1} />
       <div className="absolute inset-0 grid-pattern opacity-5 pointer-events-none" />
 
-      {/* Hidden File Input */}
       <input
         type="file"
         ref={fileInputRef}
@@ -263,7 +285,6 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
       <header className="relative z-30 border-b border-border/30 bg-background/40 backdrop-blur-xl shrink-0">
         <div className="max-w-[1800px] mx-auto px-6 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Title & Path */}
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleGoBack}
@@ -273,10 +294,8 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
               </button>
 
               <div className="flex flex-col">
-                <h1 className="text-lg font-semibold flex items-center gap-2">
-                  Files
-                </h1>
-                <nav className="flex items-center space-x-1 mt-0.5 text-xs text-muted-foreground overflow-hidden">
+                <h1 className="text-lg font-semibold">Files</h1>
+                <nav className="flex items-center space-x-1 mt-0.5 text-xs text-muted-foreground whitespace-nowrap overflow-hidden">
                   {breadcrumbs.map((crumb, idx) => (
                     <div
                       key={crumb.id || "root"}
@@ -287,11 +306,7 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
                       )}
                       <button
                         onClick={() => setCurrentFolderId(crumb.id)}
-                        className={`hover:text-foreground transition-colors ${
-                          crumb.id === currentFolderId
-                            ? "text-primary font-medium"
-                            : ""
-                        }`}
+                        className={`hover:text-foreground transition-colors ${crumb.id === currentFolderId ? "text-primary font-medium" : ""}`}
                       >
                         {crumb.name}
                       </button>
@@ -301,7 +316,6 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
               </div>
             </div>
 
-            {/* Global Actions */}
             <div className="flex items-center space-x-3 w-full md:w-auto">
               <div className="relative flex-1 md:w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -310,28 +324,20 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
                   placeholder="Search files..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-secondary/30 border border-border/20 rounded-md focus:outline-none focus:border-primary/50 text-sm transition-all"
+                  className="w-full pl-10 pr-4 py-2 bg-secondary/30 border border-border/20 rounded-md focus:border-primary/50 text-sm transition-all outline-none"
                 />
               </div>
 
               <div className="flex items-center space-x-1 bg-secondary/30 border border-border/20 rounded-md p-1">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-1.5 rounded-md transition-all ${
-                    viewMode === "grid"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`p-1.5 rounded-md ${viewMode === "grid" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
                 >
                   <Grid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-1.5 rounded-md transition-all ${
-                    viewMode === "list"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`p-1.5 rounded-md ${viewMode === "list" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
                 >
                   <List className="w-4 h-4" />
                 </button>
@@ -347,7 +353,7 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
                 </button>
                 <button
                   onClick={() => setActiveModal("upload")}
-                  className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm font-medium"
+                  className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm font-medium transition-colors"
                 >
                   <Upload className="w-4 h-4" />
                   <span>Upload</span>
@@ -358,49 +364,39 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
         </div>
       </header>
 
-      {/* Main Workspace */}
       <main className="relative z-10 flex-1 overflow-hidden flex">
         {/* Sidebar */}
         <aside className="w-72 border-r border-border/10 bg-background/20 backdrop-blur-sm p-6 overflow-y-auto shrink-0 hidden lg:flex flex-col space-y-8">
           <section>
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-              Storage
+              Storage Usage
             </h3>
             <div className="p-4 rounded-lg bg-white/5 border border-border/10 space-y-3">
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-xs font-mono">
                 <span>Used Capacity</span>
-                <span className="font-medium">
-                  {storageUsed} GB / {storageTotal} GB
-                </span>
+                <span>0.4 GB / 5.0 GB</span>
               </div>
               <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-primary"
                   initial={{ width: 0 }}
-                  animate={{ width: `${storagePercent}%` }}
-                  transition={{ duration: 1 }}
+                  animate={{ width: `8%` }}
                 />
               </div>
-              <p className="text-[10px] text-muted-foreground">
-                {storagePercent.toFixed(1)}% of your storage is occupied
-              </p>
             </div>
           </section>
 
           <section className="flex-1">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-              Categories
+              Quick Filters
             </h3>
             <div className="space-y-1 text-sm">
               {[
                 {
                   name: "Documents",
                   icon: FileText,
-                  count: files.filter(
-                    (f) =>
-                      f.mime_type?.includes("pdf") ||
-                      f.mime_type?.includes("doc"),
-                  ).length,
+                  count: files.filter((f) => f.mime_type?.includes("pdf"))
+                    .length,
                 },
                 {
                   name: "Images",
@@ -414,16 +410,6 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
                   count: files.filter((f) => f.mime_type?.startsWith("video/"))
                     .length,
                 },
-                {
-                  name: "Source Code",
-                  icon: FileCode,
-                  count: files.filter(
-                    (f) =>
-                      f.extension === "ts" ||
-                      f.extension === "tsx" ||
-                      f.extension === "js",
-                  ).length,
-                },
               ].map((cat) => (
                 <button
                   key={cat.name}
@@ -433,41 +419,29 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
                     <cat.icon className="w-4 h-4 group-hover:text-primary transition-colors" />
                     <span>{cat.name}</span>
                   </div>
-                  <span className="text-xs opacity-50 px-2">{cat.count}</span>
+                  <span className="text-xs opacity-50">{cat.count}</span>
                 </button>
               ))}
-            </div>
-          </section>
-
-          <section className="pt-6 border-t border-border/10">
-            <div className="flex items-center space-x-2 text-muted-foreground/30 text-[10px] font-medium">
-              <Info className="w-3 h-3" />
-              <span>Supabase Managed Storage</span>
             </div>
           </section>
         </aside>
 
         {/* Content Viewport */}
-        <section className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-black/10">
+        <section className="flex-1 overflow-y-auto p-8 bg-black/5 no-scrollbar">
           <AnimatePresence mode="wait">
             {isFilesLoading ? (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="h-full flex items-center justify-center"
-              >
-                <Loader2 className="w-8 h-8 text-primary animate-spin" />
-              </motion.div>
+              <div className="h-full flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
             ) : !visibleFiles.length ? (
               <motion.div
                 key="empty"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="h-full flex flex-col items-center justify-center text-center opacity-40"
+                className="h-full flex flex-col items-center justify-center opacity-30"
               >
                 <Folder className="w-16 h-16 mb-4" strokeWidth={1} />
-                <p className="text-sm">This folder is empty</p>
+                <p className="text-sm">Empty Directory</p>
               </motion.div>
             ) : (
               <motion.div
@@ -496,25 +470,22 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
                         setSelectedFileId(file.id);
                         setActiveModal("delete");
                       }}
+                      onMove={() => {
+                        setSelectedFileId(file.id);
+                        setActiveModal("move");
+                      }}
+                      onView={() => handleDownload(file)}
+                      onShare={() => handleShare(file)}
                       icon={getFileIcon(file.type, file.mime_type)}
                     />
                   ))
                 ) : (
                   <table className="w-full text-left text-sm border-collapse">
-                    <thead>
-                      <tr className="border-b border-border/10 text-muted-foreground text-xs uppercase bg-white/5">
-                        <th className="px-6 py-4 font-medium tracking-wider">
-                          Name
-                        </th>
-                        <th className="px-6 py-4 font-medium tracking-wider">
-                          Type
-                        </th>
-                        <th className="px-6 py-4 font-medium tracking-wider">
-                          Size
-                        </th>
-                        <th className="px-6 py-4 font-medium tracking-wider">
-                          Date Modified
-                        </th>
+                    <thead className="border-b border-border/10 text-muted-foreground text-xs uppercase bg-white/5">
+                      <tr>
+                        <th className="px-6 py-4 font-medium">Name</th>
+                        <th className="px-6 py-4 font-medium">Size</th>
+                        <th className="px-6 py-4 font-medium">Modified</th>
                         <th className="px-6 py-4 text-right">Actions</th>
                       </tr>
                     </thead>
@@ -535,7 +506,12 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
                             setSelectedFileId(file.id);
                             setActiveModal("delete");
                           }}
-                          onDownload={() => handleDownload(file)}
+                          onMove={() => {
+                            setSelectedFileId(file.id);
+                            setActiveModal("move");
+                          }}
+                          onView={() => handleDownload(file)}
+                          onShare={() => handleShare(file)}
                           icon={getFileIcon(file.type, file.mime_type)}
                         />
                       ))}
@@ -555,51 +531,92 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
             file={selectedFile}
             onClose={() => setActiveModal(null)}
             onDownload={() => handleDownload(selectedFile)}
+            onShare={() => handleShare(selectedFile)}
             icon={getFileIcon(selectedFile.type, selectedFile.mime_type)}
           />
         )}
 
-        {activeModal === "new_folder" && (
-          <ModalWrapper
-            onClose={() => setActiveModal(null)}
-            title="Create New Folder"
-          >
+        {activeModal === "move" && selectedFile && (
+          <ModalWrapper onClose={() => setActiveModal(null)} title="Move Item">
             <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs text-muted-foreground">
-                  Folder Name
-                </label>
-                <input
-                  autoFocus
-                  type="text"
-                  value={newFolderName}
-                  onChange={(e) => setNewFolderName(e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" &&
-                    createFolderMutation.mutate(newFolderName)
+              <p className="text-xs text-muted-foreground mb-4">
+                Select target destination for{" "}
+                <span className="text-white font-bold">
+                  "{selectedFile.name}"
+                </span>
+                :
+              </p>
+              <div className="max-h-60 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                <button
+                  onClick={() =>
+                    moveFileMutation.mutate({
+                      fileId: selectedFile.id,
+                      targetFolderId: null,
+                    })
                   }
-                  placeholder="Untitled Folder"
-                  className="w-full bg-white/5 border border-border/20 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50"
-                />
+                  className="w-full flex items-center space-x-3 p-3 rounded-lg bg-white/5 border border-white/5 hover:border-primary/40 transition-all text-sm"
+                >
+                  <Folder className="w-4 h-4 text-primary" />
+                  <span>Main Directory (Root)</span>
+                </button>
+                {allFolders
+                  .filter((f) => f.id !== selectedFile.id)
+                  .map((folder) => (
+                    <button
+                      key={folder.id}
+                      onClick={() =>
+                        moveFileMutation.mutate({
+                          fileId: selectedFile.id,
+                          targetFolderId: folder.id,
+                        })
+                      }
+                      className="w-full flex items-center space-x-3 p-3 rounded-lg bg-white/5 border border-white/5 hover:border-primary/40 transition-all text-sm"
+                    >
+                      <Folder className="w-4 h-4 text-primary" />
+                      <span>{folder.name}</span>
+                    </button>
+                  ))}
               </div>
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end pt-4">
                 <button
                   onClick={() => setActiveModal(null)}
-                  className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="px-4 py-2 text-sm text-muted-foreground hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </ModalWrapper>
+        )}
+
+        {activeModal === "new_folder" && (
+          <ModalWrapper onClose={() => setActiveModal(null)} title="New Folder">
+            <div className="space-y-4">
+              <input
+                autoFocus
+                type="text"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" &&
+                  createFolderMutation.mutate(newFolderName)
+                }
+                placeholder="Folder name"
+                className="w-full bg-white/5 border border-border/20 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-primary/50"
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="px-4 py-2 text-sm text-muted-foreground"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => createFolderMutation.mutate(newFolderName)}
-                  disabled={
-                    !newFolderName.trim() || createFolderMutation.isPending
-                  }
-                  className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  disabled={!newFolderName.trim()}
+                  className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
                 >
-                  {createFolderMutation.isPending && (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  )}
-                  Create Folder
+                  Create
                 </button>
               </div>
             </div>
@@ -613,39 +630,19 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
           >
             <div className="flex flex-col items-center justify-center p-8 space-y-6 text-center">
               {uploadFileMutation.isPending ? (
-                <>
-                  <div className="relative">
-                    <Loader2 className="w-12 h-12 text-primary animate-spin" />
-                    <div className="absolute inset-0 blur-xl bg-primary/20" />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Syncing with Cloud...</p>
-                    <p className="text-xs text-muted-foreground">
-                      Writing metadata and storing binary objects.
-                    </p>
-                  </div>
-                </>
+                <Loader2 className="w-12 h-12 text-primary animate-spin" />
               ) : (
                 <>
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Upload className="w-8 h-8 text-primary" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-base font-semibold">Ready to Sync</h3>
-                    <p className="text-xs text-muted-foreground max-w-[240px]">
-                      Your file will be uploaded to Supabase Storage and
-                      registered in the database.
-                    </p>
-                  </div>
+                  <Upload className="w-10 h-10 text-primary opacity-50" />
+                  <p className="text-sm text-muted-foreground">
+                    Select a file to sync to your workspace.
+                  </p>
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full py-3 bg-primary text-primary-foreground rounded-lg text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95"
+                    className="w-full py-3 bg-primary text-primary-foreground rounded-lg text-sm font-bold hover:bg-primary/90"
                   >
-                    Choose from Device
+                    Choose File
                   </button>
-                  <p className="text-[10px] text-muted-foreground italic">
-                    Max individual file: 100MB
-                  </p>
                 </>
               )}
             </div>
@@ -653,43 +650,27 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
         )}
 
         {activeModal === "delete" && selectedFile && (
-          <ModalWrapper
-            onClose={() => setActiveModal(null)}
-            title="Permanent Deletion"
-          >
-            <div className="space-y-6">
-              <div className="flex items-start gap-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-red-500">
-                    Irreversible Action
-                  </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    You are deleting{" "}
-                    <span className="text-foreground font-semibold">
-                      "{selectedFile.name}"
-                    </span>
-                    . This will remove the database record and the storage
-                    binary.
-                  </p>
-                </div>
-              </div>
-              <div className="flex justify-end gap-3">
+          <ModalWrapper onClose={() => setActiveModal(null)} title="Delete?">
+            <div className="space-y-6 text-center">
+              <p className="text-sm text-muted-foreground">
+                Confirm removal of{" "}
+                <span className="font-bold text-white">
+                  "{selectedFile.name}"
+                </span>
+                ?
+              </p>
+              <div className="flex justify-center gap-3">
                 <button
                   onClick={() => setActiveModal(null)}
-                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
+                  className="px-6 py-2 border border-border/20 rounded-lg text-sm"
                 >
-                  Cancel
+                  No
                 </button>
                 <button
                   onClick={() => deleteFileMutation.mutate(selectedFile)}
-                  disabled={deleteFileMutation.isPending}
-                  className="px-6 py-2 bg-red-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all flex items-center gap-2"
+                  className="px-6 py-2 bg-red-600 text-white rounded-lg text-sm font-bold"
                 >
-                  {deleteFileMutation.isPending && (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  )}
-                  Confirm Delete
+                  Yes, Delete
                 </button>
               </div>
             </div>
@@ -702,15 +683,7 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
 
 // --- SUB-COMPONENTS ---
 
-const ModalWrapper = ({
-  children,
-  onClose,
-  title,
-}: {
-  children: React.ReactNode;
-  onClose: () => void;
-  title: string;
-}) => (
+const ModalWrapper = ({ children, onClose, title }: any) => (
   <motion.div
     className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md"
     initial={{ opacity: 0 }}
@@ -719,19 +692,16 @@ const ModalWrapper = ({
     onClick={onClose}
   >
     <motion.div
-      className="bg-zinc-900 border border-border/20 w-full max-w-md rounded-2xl p-8 relative shadow-2xl overflow-hidden"
-      initial={{ scale: 0.9, y: 20 }}
+      className="bg-zinc-900 border border-border/20 w-full max-w-sm rounded-2xl p-8 relative shadow-2xl"
+      initial={{ scale: 0.9, y: 10 }}
       animate={{ scale: 1, y: 0 }}
-      exit={{ scale: 0.9, y: 20 }}
+      exit={{ scale: 0.9, y: 10 }}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-bold">{title}</h2>
-        <button
-          onClick={onClose}
-          className="p-1.5 hover:bg-white/5 rounded-full text-muted-foreground transition-colors"
-        >
-          <X className="w-5 h-5" />
+        <button onClick={onClose} className="p-1 hover:bg-white/5 rounded-full">
+          <X className="w-4 h-4" />
         </button>
       </div>
       {children}
@@ -745,66 +715,83 @@ const FileCard = ({
   onSelect,
   onOpen,
   onDelete,
+  onMove,
+  onView,
+  onShare,
   icon: Icon,
 }: any) => {
   return (
     <motion.div
       layout
-      className={`group relative p-4 rounded-lg border transition-all cursor-pointer select-none h-48 flex flex-col ${
-        isSelected
-          ? "border-primary bg-primary/5 shadow-2xl"
-          : "border-border/10 hover:border-primary/30 hover:bg-white/5"
-      }`}
+      className={`group relative p-4 rounded-xl border transition-all cursor-pointer h-48 flex flex-col ${isSelected ? "border-primary bg-primary/5 shadow-xl" : "border-border/10 hover:border-primary/30 hover:bg-white/5"}`}
       onClick={(e) => {
         e.stopPropagation();
         onSelect();
       }}
       onDoubleClick={onOpen}
     >
-      <div className="flex-1 flex flex-col items-center justify-center p-4 space-y-4">
-        <div
-          className={`relative transition-transform duration-500 group-hover:scale-110 ${isSelected ? "scale-110" : ""}`}
-        >
-          <Icon
-            className={`w-12 h-12 ${file.type === "folder" ? "text-primary/70" : "text-muted-foreground/30 group-hover:text-foreground/70"}`}
-            strokeWidth={1}
-          />
-        </div>
-
-        <div className="text-center overflow-hidden w-full">
-          <h3 className="text-xs font-semibold truncate px-2 mb-1">
+      <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+        <Icon
+          className={`w-12 h-12 ${file.type === "folder" ? "text-primary/70" : "text-muted-foreground/30 group-hover:text-foreground/70"}`}
+          strokeWidth={1}
+        />
+        <div className="text-center w-full px-2">
+          <h3
+            className="text-xs font-semibold truncate leading-tight"
+            title={file.name}
+          >
             {file.name}
           </h3>
-          <p className="text-[10px] text-muted-foreground opacity-60">
-            {file.type === "folder" ? "Directory" : formatSize(file.size_bytes)}
+          <p className="text-[10px] text-muted-foreground mt-1">
+            {file.type === "folder" ? "Folder" : formatSize(file.size_bytes)}
           </p>
         </div>
       </div>
 
-      <div
-        className={`absolute top-2 right-2 flex items-center space-x-1 opacity-0 transition-all translate-y-1 group-hover:translate-y-0 group-hover:opacity-100`}
-      >
+      <div className="absolute top-2 right-2 flex space-x-0.5 opacity-0 group-hover:opacity-100 transition-all scale-90 origin-top-right">
+        {file.type === "file" && (
+          <>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onView();
+              }}
+              className="p-2 hover:bg-white/10 rounded-md"
+              title="View"
+            >
+              <Eye className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare();
+              }}
+              className="p-2 hover:bg-white/10 rounded-md"
+              title="Share"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+            </button>
+          </>
+        )}
         <button
-          className="p-2 hover:bg-white/10 rounded-md text-muted-foreground hover:text-foreground transition-colors"
           onClick={(e) => {
             e.stopPropagation();
-            onOpen();
+            onMove();
           }}
+          className="p-2 hover:bg-white/10 rounded-md"
+          title="Move"
         >
-          {file.type === "folder" ? (
-            <ArrowUpRight className="w-4 h-4" />
-          ) : (
-            <Eye className="w-4 h-4" />
-          )}
+          <Move className="w-3.5 h-3.5" />
         </button>
         <button
-          className="p-2 hover:bg-red-500/10 rounded-md text-muted-foreground hover:text-red-400 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             onDelete();
           }}
+          className="p-2 hover:bg-red-500/10 rounded-md text-red-400"
+          title="Delete"
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
     </motion.div>
@@ -817,35 +804,30 @@ const FileRow = ({
   onSelect,
   onOpen,
   onDelete,
-  onDownload,
+  onMove,
+  onView,
+  onShare,
   icon: Icon,
 }: any) => {
   return (
     <motion.tr
       layout
-      className={`group transition-colors cursor-pointer ${
-        isSelected ? "bg-primary/5" : "hover:bg-white/5"
-      }`}
+      className={`group transition-colors cursor-pointer ${isSelected ? "bg-primary/5" : "hover:bg-white/5"}`}
       onClick={(e) => {
         e.stopPropagation();
         onSelect();
       }}
       onDoubleClick={onOpen}
     >
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-4">
-          <div className="p-2 rounded-md bg-secondary/30 border border-border/10 group-hover:border-primary/20 transition-colors">
-            <Icon
-              className={`w-5 h-5 ${file.type === "folder" ? "text-primary" : "text-muted-foreground/50"}`}
-            />
-          </div>
-          <span className={`font-semibold ${isSelected ? "text-primary" : ""}`}>
+      <td className="px-6 py-4 max-w-[200px]">
+        <div className="flex items-center space-x-3">
+          <Icon
+            className={`w-4 h-4 shrink-0 ${file.type === "folder" ? "text-primary" : "text-muted-foreground/50"}`}
+          />
+          <span className="font-semibold truncate" title={file.name}>
             {file.name}
           </span>
         </div>
-      </td>
-      <td className="px-6 py-4 text-muted-foreground text-xs uppercase tracking-wider">
-        {file.type}
       </td>
       <td className="px-6 py-4 text-muted-foreground text-xs font-mono">
         {file.type === "folder" ? "--" : formatSize(file.size_bytes)}
@@ -854,37 +836,47 @@ const FileRow = ({
         {formatDate(file.uploaded_at)}
       </td>
       <td className="px-6 py-4 text-right">
-        <div
-          className={`flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-all`}
-        >
+        <div className="flex items-center justify-end space-x-1 opacity-0 group-hover:opacity-100 transition-all">
+          {file.type === "file" && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onView();
+                }}
+                className="p-2 hover:bg-white/10 rounded-md"
+                title="View"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShare();
+                }}
+                className="p-2 hover:bg-white/10 rounded-md"
+                title="Share"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+            </>
+          )}
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onOpen();
+              onMove();
             }}
-            className="p-2 hover:bg-white/10 rounded-md text-muted-foreground hover:text-foreground"
-            title="View"
+            className="p-2 hover:bg-white/10 rounded-md"
+            title="Move"
           >
-            <Eye className="w-4 h-4" />
+            <Move className="w-4 h-4" />
           </button>
-          {file.type === "file" && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDownload();
-              }}
-              className="p-2 hover:bg-white/10 rounded-md text-muted-foreground hover:text-foreground"
-              title="Download"
-            >
-              <Download className="w-4 h-4" />
-            </button>
-          )}
           <button
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
             }}
-            className="p-2 hover:bg-white/10 rounded-md text-muted-foreground hover:text-red-400"
+            className="p-2 hover:bg-white/10 rounded-md text-red-400"
             title="Delete"
           >
             <Trash2 className="w-4 h-4" />
@@ -895,7 +887,13 @@ const FileRow = ({
   );
 };
 
-const DetailsModal = ({ file, onClose, onDownload, icon: Icon }: any) => {
+const DetailsModal = ({
+  file,
+  onClose,
+  onDownload,
+  onShare,
+  icon: Icon,
+}: any) => {
   return (
     <motion.div
       className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md"
@@ -905,70 +903,57 @@ const DetailsModal = ({ file, onClose, onDownload, icon: Icon }: any) => {
       onClick={onClose}
     >
       <motion.div
-        className="bg-zinc-900 border border-border/20 w-full max-w-sm rounded-2xl p-10 relative shadow-2xl"
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
+        className="bg-zinc-900 border border-border/20 w-full max-w-sm rounded-2xl p-10 h-auto flex flex-col items-center text-center space-y-8"
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 hover:bg-white/5 rounded-full text-muted-foreground"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="flex flex-col items-center text-center space-y-8">
-          <div className="w-24 h-24 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center relative">
-            <Icon className="w-12 h-12 text-primary" strokeWidth={1} />
-            <div className="absolute inset-0 blur-2xl bg-primary/20 -z-10" />
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-1 truncate max-w-[280px]">
-              {file.name}
-            </h2>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest">
-              Database Record
-            </p>
-          </div>
-
-          <div className="w-full space-y-2">
-            {[
-              {
-                label: "File Size",
-                value:
-                  file.type === "folder" ? "N/A" : formatSize(file.size_bytes),
-              },
-              { label: "Uploaded", value: formatDate(file.uploaded_at) },
-              { label: "MIME Type", value: file.mime_type || "Directory" },
-              { label: "Public", value: file.is_public ? "Yes" : "No" },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5"
-              >
-                <span className="text-[10px] text-muted-foreground uppercase font-semibold">
-                  {stat.label}
-                </span>
-                <span className="text-xs font-bold">{stat.value}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="w-full flex flex-col gap-2">
-            {file.type === "file" && (
-              <button
-                onClick={onDownload}
-                className="w-full py-3.5 bg-primary text-primary-foreground text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-xl shadow-primary/20"
-              >
-                <Download className="w-4 h-4" /> Download Original
-              </button>
-            )}
-            <button className="w-full py-3.5 bg-white/5 hover:bg-white/10 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-3 border border-white/5">
-              <Share2 className="w-4 h-4" /> Copy Access Link
-            </button>
-          </div>
+        <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center relative">
+          <Icon className="w-10 h-10 text-primary" />
+          <div className="absolute inset-0 blur-xl bg-primary/10 -z-10" />
+        </div>
+        <div className="w-full">
+          <h2 className="text-xl font-bold truncate px-4" title={file.name}>
+            {file.name}
+          </h2>
+          <p className="text-[10px] text-muted-foreground uppercase mt-1 tracking-widest">
+            Metadata Profile
+          </p>
+        </div>
+        <div className="w-full space-y-2">
+          {[
+            {
+              label: "Size",
+              value:
+                file.type === "folder" ? "N/A" : formatSize(file.size_bytes),
+            },
+            { label: "Date", value: formatDate(file.uploaded_at) },
+          ].map((s) => (
+            <div
+              key={s.label}
+              className="flex justify-between p-3 rounded-xl bg-white/5 text-xs"
+            >
+              <span className="text-muted-foreground uppercase">{s.label}</span>
+              <span className="font-bold">{s.value}</span>
+            </div>
+          ))}
+        </div>
+        <div className="w-full flex flex-col gap-2">
+          <button
+            onClick={onDownload}
+            className="w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg shadow-primary/20"
+          >
+            Download File
+          </button>
+          <button
+            onClick={() => {
+              onClose();
+              onShare();
+            }}
+            className="w-full py-3 bg-white/5 hover:bg-white/10 text-xs font-bold rounded-xl transition-all border border-white/5 flex items-center justify-center gap-2"
+          >
+            <Share2 className="w-4 h-4" /> Share Link
+          </button>
         </div>
       </motion.div>
     </motion.div>

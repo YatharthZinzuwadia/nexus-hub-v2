@@ -188,3 +188,28 @@ export async function getDownloadUrl(file: DBFile): Promise<string> {
 
   return data.signedUrl;
 }
+
+/**
+ * UPDATE FILE
+ * Updates file metadata (e.g., name, parent_folder_id)
+ */
+export async function updateFile(
+  fileId: string,
+  updates: FileUpdate,
+): Promise<DBFile> {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("files")
+    .update(updates)
+    .eq("id", fileId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating file:", error);
+    throw new Error(`Failed to update file: ${error.message}`);
+  }
+
+  return data;
+}
