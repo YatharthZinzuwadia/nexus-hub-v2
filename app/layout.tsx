@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { AuthProvider } from "@/lib/providers/auth-provider";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
+import { QueryProvider } from "@/lib/providers/query-provider";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -34,13 +35,21 @@ export default function RootLayout({
       >
         {/* ThemeProvider: Manages dark/light mode */}
         <ThemeProvider>
-          {/* AuthProvider: Syncs Supabase session with Zustand */}
-          <AuthProvider>
-            {children}
-            {/* Sonner: Toast notifications for auth feedback */}
-            <Toaster position="top-right" richColors closeButton theme="dark" />
-            <Analytics />
-          </AuthProvider>
+          {/* QueryProvider: Context for TanStack Query (required for useQuery hooks) */}
+          <QueryProvider>
+            {/* AuthProvider: Syncs Supabase session with Zustand */}
+            <AuthProvider>
+              {children}
+              {/* Sonner: Toast notifications for auth feedback */}
+              <Toaster
+                position="top-right"
+                richColors
+                closeButton
+                theme="dark"
+              />
+              <Analytics />
+            </AuthProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

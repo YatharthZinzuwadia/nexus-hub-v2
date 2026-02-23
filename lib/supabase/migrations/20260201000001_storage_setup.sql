@@ -263,7 +263,7 @@ BEGIN
 
   RETURN NULL;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Apply trigger to files table
 CREATE TRIGGER update_user_storage_quota
