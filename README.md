@@ -4,6 +4,8 @@
 
 > Your unified developer workspace with AI-powered intelligence
 
+URL : https://nexus-hub-rho.vercel.app/
+
 ![Next.js](https://img.shields.io/badge/Next.js-16.0.10-black?style=flat-square&logo=next.js)
 ![React](https://img.shields.io/badge/React-19.2.1-61DAFB?style=flat-square&logo=react)
 ![Supabase](https://img.shields.io/badge/Supabase-Full_Backend-3ECF8E?style=flat-square&logo=supabase)
