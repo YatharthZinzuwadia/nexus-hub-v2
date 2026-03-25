@@ -94,6 +94,7 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [newFolderName, setNewFolderName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
   // --- QUERIES ---
   const { data: files = [], isLoading: isFilesLoading } = useQuery({
@@ -229,7 +230,15 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) uploadFileMutation.mutate(file);
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(
+          `File size too large. Max file size is ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+        );
+        return;
+      }
+      uploadFileMutation.mutate(file);
+    }
   };
 
   const handleShare = async (file: DBFile) => {
