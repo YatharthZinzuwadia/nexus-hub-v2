@@ -213,3 +213,29 @@ export async function updateFile(
 
   return data;
 }
+
+/**
+ * GET STORAGE QUOTA
+ * Fetches the current storage usage and limit for a user
+ *
+ * 1. We're selecting from 'storage_quotas' (the table we found in the DB)
+ * 2. We filter by 'user_id' so we only get our own data
+ * 3. .single() is used because each user only has ONE quota record
+ */
+export async function getStorageQuota(userId: string) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("storage_quotas")
+    .select("used_bytes, quota_bytes")
+    .eq("user_id", userId)
+    .single();
+
+  if (error) {
+    // Note: If a user hasn't uploaded anything yet, the record might not exist.
+    // We return a default of 0 used and 1GB limit (1073741824 bytes).
+    return { used_bytes: 0, quota_bytes: 1073741824 };
+  }
+
+  return data;
+}
