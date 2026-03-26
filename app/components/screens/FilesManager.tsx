@@ -43,6 +43,7 @@ import {
   deleteFile,
   getDownloadUrl,
   updateFile,
+  getStorageQuota,
 } from "@/lib/api/files";
 import type { File as DBFile } from "@/lib/types/database";
 import { toast } from "sonner";
@@ -94,12 +95,20 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [newFolderName, setNewFolderName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
   // --- QUERIES ---
   const { data: files = [], isLoading: isFilesLoading } = useQuery({
     queryKey: ["files", user?.id, currentFolderId],
     queryFn: () =>
       user ? getFiles(user.id, currentFolderId) : Promise.resolve([]),
+    enabled: !!user,
+  });
+
+  // This query fetches the storage data whenever the user ID is available
+  const { data: storage } = useQuery({
+    queryKey: ["storage-quota", user?.id],
+    queryFn: () => (user ? getStorageQuota(user.id) : null),
     enabled: !!user,
   });
 
@@ -166,6 +175,7 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
         : Promise.reject("No user"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["files"] });
+      queryClient.invalidateQueries({ queryKey: ["storage-quota"] });
       toast.success("File uploaded");
       setActiveModal(null);
     },
@@ -176,6 +186,7 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
     mutationFn: (file: DBFile) => deleteFile(file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["files"] });
+      queryClient.invalidateQueries({ queryKey: ["storage-quota"] });
       toast.success("Deleted successfully");
       setActiveModal(null);
       setSelectedFileId(null);
@@ -229,7 +240,15 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) uploadFileMutation.mutate(file);
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(
+          `File size too large. Max file size is ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+        );
+        return;
+      }
+      uploadFileMutation.mutate(file);
+    }
   };
 
   const handleShare = async (file: DBFile) => {
@@ -374,13 +393,18 @@ const FilesManager = ({ onNavigate }: FilesManagerProps) => {
             <div className="p-4 rounded-lg bg-white/5 border border-border/10 space-y-3">
               <div className="flex justify-between text-xs font-mono">
                 <span>Used Capacity</span>
-                <span>0.4 GB / 5.0 GB</span>
+                <span>
+                  {formatSize(storage?.used_bytes || 0)} /{" "}
+                  {formatSize(storage?.quota_bytes || 5368709120)}
+                </span>
               </div>
               <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-primary"
                   initial={{ width: 0 }}
-                  animate={{ width: `8%` }}
+                  animate={{
+                    width: `${Math.min(100, ((storage?.used_bytes || 0) / (storage?.quota_bytes || 5368709120)) * 100)}%`,
+                  }}
                 />
               </div>
             </div>
