@@ -10,44 +10,53 @@ import {
   Brain,
   Code2,
   Cpu,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { CarbonFiber } from "../effects/CarbonFiber";
 import ParticleField from "../effects/ParticleField";
+import { useChatbot } from "../../../hooks/useChatbot";
 
 interface CoPilotProps {
   onNavigate: (screen: string) => void;
 }
 
-interface Message {
-  id: string;
-  role: "user" | "assistant" | "system";
-  content: string;
-  timestamp: Date;
-}
-
 const CoPilot = ({ onNavigate }: CoPilotProps) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "system",
-      content:
-        "NexusAI v0.2.0 initialized. Neural pathways online. Quantum cores synchronized.",
-      timestamp: new Date(),
-    },
-    {
-      id: "2",
-      role: "assistant",
-      content:
-        "Hello, Developer. I'm NexusAI, your advanced coding companion powered by neural networks and quantum algorithms. I'm here to help you build, debug, optimize, and innovate. What legendary code shall we craft today?",
-      timestamp: new Date(),
-    },
-  ]);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
   const [cpuUsage, setCpuUsage] = useState(42);
   const [memoryUsage, setMemoryUsage] = useState(68);
+  const [neuralNodes] = useState<
+    Array<{
+      initialX: number;
+      initialY: number;
+      animateX: number[];
+      animateY: number[];
+      duration: number;
+    }>
+  >(() =>
+    Array.from({ length: 20 }, () => ({
+      initialX: Math.random() * 100,
+      initialY: Math.random() * 100,
+      animateX: [Math.random() * 100, Math.random() * 100],
+      animateY: [Math.random() * 100, Math.random() * 100],
+      duration: 20 + Math.random() * 10,
+    })),
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const {
+    messages,
+    conversationId,
+    isLoading,
+    error,
+    sendMessage,
+    clearConversation,
+  } = useChatbot({
+    onError: (err) => {
+      console.error("Chatbot error:", err);
+    },
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,40 +80,10 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
   }, []);
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
+    await sendMessage(input);
     setInput("");
-    setIsTyping(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        "Excellent question. Let me break that down with a quantum-optimized solution...",
-        "I've analyzed your request through 47 neural layers. Here's an elegant approach using cutting-edge algorithms.",
-        "Fascinating problem. Have you considered implementing this with a distributed architecture?",
-        "That's a classic challenge in computational theory. Let me show you how the masters solve it.",
-        "// Initiating neural analysis...\n\nProcessing complete. Here's your solution, optimized for both performance and readability.",
-        "I've consulted my training data spanning billions of lines of code. This pattern emerges as the most robust solution.",
-      ];
-
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: responses[Math.floor(Math.random() * responses.length)],
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, aiMessage]);
-      setIsTyping(false);
-    }, 2000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -146,21 +125,21 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
               <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
             </radialGradient>
           </defs>
-          {[...Array(20)].map((_, i) => (
+          {neuralNodes.map((node, i) => (
             <motion.circle
               key={i}
               r="3"
               fill="url(#neuralGlow)"
               initial={{
-                cx: `${Math.random() * 100}%`,
-                cy: `${Math.random() * 100}%`,
+                cx: `${node.initialX}%`,
+                cy: `${node.initialY}%`,
               }}
               animate={{
-                cx: [`${Math.random() * 100}%`, `${Math.random() * 100}%`],
-                cy: [`${Math.random() * 100}%`, `${Math.random() * 100}%`],
+                cx: node.animateX.map((x) => `${x}%`),
+                cy: node.animateY.map((y) => `${y}%`),
               }}
               transition={{
-                duration: 20 + Math.random() * 10,
+                duration: node.duration,
                 repeat: Infinity,
                 ease: "linear",
               }}
@@ -176,7 +155,7 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
         animate={{ y: 0 }}
         transition={{ type: "spring", duration: 0.8 }}
       >
-        <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-4">
+        <div className="max-w-400 mx-auto px-4 md:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <motion.button
@@ -213,7 +192,13 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="w-2 h-2 rounded-full bg-green-500"
+                  className={`w-2 h-2 rounded-full ${
+                    error
+                      ? "bg-red-500"
+                      : isLoading
+                        ? "bg-yellow-500"
+                        : "bg-green-500"
+                  }`}
                   animate={{ scale: [1, 1.3, 1], opacity: [1, 0.5, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
@@ -221,7 +206,11 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
                   className="text-muted-foreground text-xs"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  AI_ONLINE
+                  {error
+                    ? "AI_ERROR"
+                    : isLoading
+                      ? "AI_PROCESSING"
+                      : "AI_ONLINE"}
                 </span>
               </motion.div>
 
@@ -243,7 +232,7 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
                     </span>
                     <div className="w-16 h-2 bg-secondary rounded-sm overflow-hidden">
                       <motion.div
-                        className="h-full bg-gradient-to-r from-primary to-destructive"
+                        className="h-full bg-linear-to-r from-primary to-destructive"
                         initial={{ width: 0 }}
                         animate={{ width: `${metric.value}%` }}
                         transition={{ duration: 0.5 }}
@@ -270,7 +259,7 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-3">
+        <div className="max-w-400 mx-auto px-4 md:px-8 py-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {aiCapabilities.map((cap, i) => {
               const Icon = cap.icon;
@@ -310,7 +299,7 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
 
       {/* Chat messages */}
       <div className="relative z-10 flex-1 overflow-y-auto text-foreground">
-        <div className="max-w-[1000px] mx-auto px-4 md:px-8 py-8 space-y-6">
+        <div className="max-w-250 mx-auto px-4 md:px-8 py-8 space-y-6">
           {messages.map((message, index) => (
             <motion.div
               key={message.id}
@@ -377,7 +366,7 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
                     className="text-xs text-muted-foreground"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
-                    {message.timestamp.toLocaleTimeString()}
+                    {new Date(message.timestamp).toLocaleTimeString()}
                   </span>
                 </div>
 
@@ -387,7 +376,7 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
                     message.role === "system"
                       ? "bg-secondary border border-border/30 text-center"
                       : message.role === "user"
-                        ? "bg-gradient-to-br from-primary to-destructive text-primary-foreground"
+                        ? "bg-linear-to-br from-primary to-destructive text-primary-foreground"
                         : "terminal-glass-strong border border-border/30"
                   }`}
                   whileHover={{ scale: message.role !== "system" ? 1.02 : 1 }}
@@ -410,7 +399,27 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
                           : "inherit",
                     }}
                   >
-                    {message.content}
+                    {message.isLoading ? (
+                      <div className="flex items-center space-x-2">
+                        {[0, 1, 2].map((i) => (
+                          <motion.div
+                            key={i}
+                            className="w-2 h-2 bg-primary rounded-full"
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [1, 0.5, 1],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              delay: i * 0.2,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      message.content
+                    )}
                   </p>
 
                   {/* Actions for assistant messages */}
@@ -422,6 +431,9 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
                       transition={{ duration: 0.2 }}
                     >
                       <motion.button
+                        onClick={() =>
+                          navigator.clipboard.writeText(message.content)
+                        }
                         className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -434,6 +446,17 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
                         </span>
                       </motion.button>
                       <motion.button
+                        onClick={() => {
+                          const blob = new Blob([message.content], {
+                            type: "text/plain",
+                          });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `nexusai-message-${message.id}.txt`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
                         className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -452,51 +475,38 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
             </motion.div>
           ))}
 
-          {/* Typing indicator */}
-          {isTyping && (
+          {/* Error display */}
+          {error && (
             <motion.div
-              className="flex justify-start"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              className="flex justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
             >
-              <div className="max-w-[80%]">
+              <div className="max-w-[80%] terminal-glass border border-red-500/30 p-4 rounded-sm">
                 <div className="flex items-center space-x-2 mb-2">
-                  <motion.div
-                    animate={{ rotate: [0, 360] }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                  >
-                    <Sparkles
-                      className="w-4 h-4 text-primary"
-                      strokeWidth={1.5}
-                    />
-                  </motion.div>
+                  <AlertCircle className="w-4 h-4 text-red-500" />
                   <span
-                    className="text-xs text-muted-foreground"
+                    className="text-xs text-red-500"
                     style={{ fontFamily: "IBM Plex Mono, monospace" }}
                   >
-                    NexusAI is processing...
+                    CONNECTION_ERROR
                   </span>
                 </div>
-                <div className="terminal-glass p-4 rounded-sm border border-border/30">
-                  <div className="flex items-center space-x-2">
-                    {[0, 1, 2].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-2 h-2 bg-primary rounded-full"
-                        animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          delay: i * 0.2,
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <p className="text-sm text-red-400">
+                  Failed to connect to AI service. Please check your connection
+                  and try again.
+                </p>
+                <motion.button
+                  onClick={() => window.location.reload()}
+                  className="flex items-center space-x-2 mt-3 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-sm text-red-400 hover:bg-red-500/20 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span style={{ fontFamily: "IBM Plex Mono, monospace" }}>
+                    Retry Connection
+                  </span>
+                </motion.button>
               </div>
             </motion.div>
           )}
@@ -512,7 +522,7 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
         animate={{ y: 0 }}
         transition={{ type: "spring", duration: 0.8 }}
       >
-        <div className="max-w-[1000px] mx-auto px-4 md:px-8 py-4">
+        <div className="max-w-250 mx-auto px-4 md:px-8 py-4">
           <div className="flex items-end space-x-4">
             <motion.div
               className="flex-1 terminal-glass-strong rounded-sm border border-border/30 focus-within:border-primary transition-colors overflow-hidden"
@@ -533,29 +543,50 @@ const CoPilot = ({ onNavigate }: CoPilotProps) => {
             </motion.div>
             <motion.button
               onClick={handleSend}
-              disabled={!input.trim()}
+              disabled={!input.trim() || isLoading}
               className="relative p-4 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: !input.trim() || isLoading ? 1 : 1.05 }}
+              whileTap={{ scale: !input.trim() || isLoading ? 1 : 0.95 }}
             >
-              <motion.div
-                className="absolute inset-0 bg-white"
-                initial={{ x: "-100%", opacity: 0.2 }}
-                whileHover={{ x: "100%" }}
-                transition={{ duration: 0.6 }}
-              />
-              <Send className="w-5 h-5 relative z-10" strokeWidth={1.5} />
+              {isLoading ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <RefreshCw
+                    className="w-5 h-5 relative z-10"
+                    strokeWidth={1.5}
+                  />
+                </motion.div>
+              ) : (
+                <Send className="w-5 h-5 relative z-10" strokeWidth={1.5} />
+              )}
             </motion.button>
           </div>
 
           <div className="flex items-center justify-between mt-3">
-            <p
-              className="text-xs text-muted-foreground"
-              style={{ fontFamily: "IBM Plex Mono, monospace" }}
-            >
-              // "Any sufficiently advanced AI is indistinguishable from magic."
-              — Clarke's Third Law (adapted)
-            </p>
+            <div className="flex items-center space-x-4">
+              <p
+                className="text-xs text-muted-foreground"
+                style={{ fontFamily: "IBM Plex Mono, monospace" }}
+              >
+                {/* "Any sufficiently advanced AI is indistinguishable from
+                magic." — Clarke's Third Law (adapted) */}
+              </p>
+              {conversationId && (
+                <motion.button
+                  onClick={clearConversation}
+                  className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  <span style={{ fontFamily: "IBM Plex Mono, monospace" }}>
+                    Clear Chat
+                  </span>
+                </motion.button>
+              )}
+            </div>
             <div
               className="text-xs text-muted-foreground"
               style={{ fontFamily: "IBM Plex Mono, monospace" }}
