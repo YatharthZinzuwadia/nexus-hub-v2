@@ -18,7 +18,8 @@ import {
   deleteTask,
   updateTaskStatus,
 } from "@/lib/api/tasks";
-import type { Task, TaskStatus } from "@/lib/types/database";
+import type { Task, TaskStatus, TaskPriority } from "@/lib/types/database";
+import { TaskModal } from "../ui/TaskModal";
 
 interface TaskManagerProps {
   onNavigate: (screen: string) => void;
@@ -38,6 +39,9 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   //eslint-disable-next-line
   const [notes, setNotes] = useState<Note[]>([
     {
@@ -107,29 +111,11 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
     done: tasks.filter((t) => t.status === "done"),
   };
 
-  const handleCreateTask = async () => {
+  const handleCreateTask = () => {
     if (!user) return;
-
-    const title = prompt("Enter task title:");
-    if (!title || title.trim() === "") return;
-
-    const description = prompt("Enter task description (optional):") || "";
-
-    try {
-      const newTask = await createTask({
-        user_id: user.id,
-        title: title.trim(),
-        description: description.trim(),
-        status: "todo",
-        priority: "medium",
-        tags: [],
-      });
-
-      setTasks([...tasks, newTask]);
-    } catch (error) {
-      console.error("[TaskManager] Error creating task:", error);
-      alert("Failed to create task. Please try again.");
-    }
+    setModalMode("create");
+    setEditingTask(null);
+    setModalOpen(true);
   };
 
   const handleDeleteTask = async (taskId: string) => {
@@ -145,24 +131,36 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
     }
   };
 
-  const handleEditTask = async (task: Task) => {
-    const title = prompt("Edit task title:", task.title);
-    if (title === null) return; // Cancelled
-    if (!title || title.trim() === "") return;
+  const handleEditTask = (task: Task) => {
+    setModalMode("edit");
+    setEditingTask(task);
+    setModalOpen(true);
+    setMenuOpen(null);
+  };
 
-    const description =
-      prompt("Edit task description:", task.description) || "";
+  const handleSaveTask = async (taskData: {
+    title: string;
+    description: string;
+    status: TaskStatus;
+    priority: TaskPriority;
+    tags: string[];
+  }) => {
+    if (!user) return;
 
     try {
-      const updatedTask = await updateTask(task.id, {
-        title: title.trim(),
-        description: description.trim(),
-      });
-      setTasks(tasks.map((t) => (t.id === task.id ? updatedTask : t)));
-      setMenuOpen(null);
+      if (modalMode === "create") {
+        const newTask = await createTask({
+          user_id: user.id,
+          ...taskData,
+        });
+        setTasks([...tasks, newTask]);
+      } else if (editingTask) {
+        const updatedTask = await updateTask(editingTask.id, taskData);
+        setTasks(tasks.map((t) => (t.id === editingTask.id ? updatedTask : t)));
+      }
     } catch (error) {
-      console.error("[TaskManager] Error updating task:", error);
-      alert("Failed to update task. Please try again.");
+      console.error("[TaskManager] Error saving task:", error);
+      throw error;
     }
   };
 
@@ -569,6 +567,15 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
           </>
         )}
       </div>
+
+      {/* Task Modal */}
+      <TaskModal
+        task={editingTask}
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSaveTask}
+        mode={modalMode}
+      />
     </div>
   );
 };
