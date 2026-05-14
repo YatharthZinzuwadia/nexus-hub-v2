@@ -2,31 +2,26 @@ import { motion } from "motion/react";
 import {
   ArrowLeft,
   Plus,
-  Search,
-  CheckSquare,
-  Square,
-  Trash2,
-  Edit,
-  Calendar as CalendarIcon,
-  Tag,
   Clock,
   MoreVertical,
   FileText,
+  Loader2,
+  Trash2,
+  Edit,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuthStore } from "@/lib/store/auth-store";
+import {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  updateTaskStatus,
+} from "@/lib/api/tasks";
+import type { Task, TaskStatus } from "@/lib/types/database";
 
 interface TaskManagerProps {
   onNavigate: (screen: string) => void;
-}
-
-interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  status: "todo" | "inprogress" | "done";
-  priority: "low" | "medium" | "high";
-  dueDate?: string;
-  tags: string[];
 }
 
 interface Note {
@@ -38,45 +33,12 @@ interface Note {
 }
 
 const TaskManager = ({ onNavigate }: TaskManagerProps) => {
+  const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<"tasks" | "notes">("tasks");
-  const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
-
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      title: "Refactor authentication module",
-      description: "Update to use latest security standards",
-      status: "inprogress",
-      priority: "high",
-      dueDate: "2026-02-01",
-      tags: ["security", "backend"],
-    },
-    {
-      id: "2",
-      title: "Design new dashboard layout",
-      description: "Create mockups for v3.0",
-      status: "todo",
-      priority: "medium",
-      dueDate: "2026-02-05",
-      tags: ["design", "ui"],
-    },
-    {
-      id: "3",
-      title: "Write API documentation",
-      status: "todo",
-      priority: "low",
-      tags: ["docs"],
-    },
-    {
-      id: "4",
-      title: "Fix login bug on mobile",
-      status: "done",
-      priority: "high",
-      dueDate: "2026-01-28",
-      tags: ["bug", "mobile"],
-    },
-  ]);
-
+  const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  //eslint-disable-next-line
   const [notes, setNotes] = useState<Note[]>([
     {
       id: "1",
@@ -96,8 +58,37 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
     },
   ]);
 
+  // Fetch tasks on component mount
+  useEffect(() => {
+    const fetchTasks = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+        const data = await getTasks(user.id);
+        setTasks(data);
+      } catch (error) {
+        console.error("[TaskManager] Error fetching tasks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [user]);
+
+  // Helper to format date for display
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0];
+  };
+
+  // Helper to get priority color including urgent
   const getPriorityColor = (priority: string) => {
     switch (priority) {
+      case "urgent":
+        return "text-red-500 border-red-500/30 bg-red-500/10";
       case "high":
         return "text-red-400 border-red-400/30 bg-red-400/10";
       case "medium":
@@ -111,8 +102,79 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
 
   const tasksByStatus = {
     todo: tasks.filter((t) => t.status === "todo"),
-    inprogress: tasks.filter((t) => t.status === "inprogress"),
+    "in-progress": tasks.filter((t) => t.status === "in-progress"),
+    review: tasks.filter((t) => t.status === "review"),
     done: tasks.filter((t) => t.status === "done"),
+  };
+
+  const handleCreateTask = async () => {
+    if (!user) return;
+
+    const title = prompt("Enter task title:");
+    if (!title || title.trim() === "") return;
+
+    const description = prompt("Enter task description (optional):") || "";
+
+    try {
+      const newTask = await createTask({
+        user_id: user.id,
+        title: title.trim(),
+        description: description.trim(),
+        status: "todo",
+        priority: "medium",
+        tags: [],
+      });
+
+      setTasks([...tasks, newTask]);
+    } catch (error) {
+      console.error("[TaskManager] Error creating task:", error);
+      alert("Failed to create task. Please try again.");
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    if (!confirm("Are you sure you want to delete this task?")) return;
+
+    try {
+      await deleteTask(taskId);
+      setTasks(tasks.filter((t) => t.id !== taskId));
+      setMenuOpen(null);
+    } catch (error) {
+      console.error("[TaskManager] Error deleting task:", error);
+      alert("Failed to delete task. Please try again.");
+    }
+  };
+
+  const handleEditTask = async (task: Task) => {
+    const title = prompt("Edit task title:", task.title);
+    if (title === null) return; // Cancelled
+    if (!title || title.trim() === "") return;
+
+    const description =
+      prompt("Edit task description:", task.description) || "";
+
+    try {
+      const updatedTask = await updateTask(task.id, {
+        title: title.trim(),
+        description: description.trim(),
+      });
+      setTasks(tasks.map((t) => (t.id === task.id ? updatedTask : t)));
+      setMenuOpen(null);
+    } catch (error) {
+      console.error("[TaskManager] Error updating task:", error);
+      alert("Failed to update task. Please try again.");
+    }
+  };
+
+  const handleMoveTask = async (taskId: string, newStatus: TaskStatus) => {
+    try {
+      const updatedTask = await updateTaskStatus(taskId, newStatus);
+      setTasks(tasks.map((t) => (t.id === taskId ? updatedTask : t)));
+      setMenuOpen(null);
+    } catch (error) {
+      console.error("[TaskManager] Error moving task:", error);
+      alert("Failed to move task. Please try again.");
+    }
   };
 
   return (
@@ -127,7 +189,7 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
         animate={{ y: 0 }}
         transition={{ type: "spring", duration: 0.8 }}
       >
-        <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-4">
+        <div className="max-w-400 mx-auto px-4 md:px-8 py-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <motion.button
@@ -170,7 +232,7 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
                 >
                   TASKS
                 </button>
-                <button
+                {/* <button
                   onClick={() => setActiveTab("notes")}
                   className={`px-4 py-2 rounded-sm transition-colors text-sm ${
                     activeTab === "notes"
@@ -180,10 +242,11 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
                   NOTES
-                </button>
+                </button> */}
               </div>
 
               <motion.button
+                onClick={handleCreateTask}
                 className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-sm hover:bg-destructive transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -193,7 +256,7 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
                   className="text-sm hidden md:inline"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  NEW {activeTab === "tasks" ? "TASK" : "NOTE"}
+                  NEW TASK
                 </span>
               </motion.button>
             </div>
@@ -202,8 +265,12 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
       </motion.div>
 
       {/* Main content */}
-      <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-8 py-8">
-        {activeTab === "tasks" ? (
+      <div className="relative z-10 max-w-400 mx-auto px-4 md:px-8 py-8">
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+        ) : activeTab === "tasks" ? (
           <>
             {/* Task stats */}
             <motion.div
@@ -237,7 +304,7 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
                   className="text-2xl text-foreground"
                   style={{ fontFamily: "IBM Plex Mono, monospace" }}
                 >
-                  {tasksByStatus.inprogress.length}
+                  {tasksByStatus["in-progress"].length}
                 </div>
               </div>
               <div className="terminal-glass p-4 rounded-sm border border-border/20">
@@ -271,8 +338,8 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
             </motion.div>
 
             {/* Kanban board */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {(["todo", "inprogress", "done"] as const).map(
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {(["todo", "in-progress", "review", "done"] as const).map(
                 (status, colIndex) => (
                   <motion.div
                     key={status}
@@ -288,9 +355,11 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
                       >
                         {status === "todo"
                           ? "To Do"
-                          : status === "inprogress"
+                          : status === "in-progress"
                             ? "In Progress"
-                            : "Done"}
+                            : status === "review"
+                              ? "Review"
+                              : "Done"}
                       </h3>
                       <span
                         className="text-xs text-muted-foreground px-2 py-1 bg-secondary rounded-sm"
@@ -301,75 +370,137 @@ const TaskManager = ({ onNavigate }: TaskManagerProps) => {
                     </div>
 
                     <div className="space-y-3">
-                      {tasksByStatus[status].map((task, taskIndex) => (
-                        <motion.div
-                          key={task.id}
-                          className="group terminal-glass p-4 rounded-sm border border-border/20 hover:border-primary/50 transition-all cursor-pointer"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{
-                            delay: 0.4 + colIndex * 0.1 + taskIndex * 0.05,
-                          }}
-                          whileHover={{ y: -2 }}
-                        >
-                          <div className="flex items-start justify-between mb-2">
-                            <h4 className="text-sm text-foreground flex-1">
-                              {task.title}
-                            </h4>
-                            <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-secondary rounded-sm">
-                              <MoreVertical className="w-4 h-4 text-muted-foreground" />
-                            </button>
-                          </div>
+                      {tasksByStatus[status].map(
+                        (task: Task, taskIndex: number) => (
+                          <motion.div
+                            key={task.id}
+                            className="group terminal-glass p-4 rounded-sm border border-border/20 hover:border-primary/50 transition-all cursor-pointer"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{
+                              delay: 0.4 + colIndex * 0.1 + taskIndex * 0.05,
+                            }}
+                            whileHover={{ y: -2 }}
+                          >
+                            <div className="flex items-start justify-between mb-2">
+                              <h4 className="text-sm text-foreground flex-1">
+                                {task.title}
+                              </h4>
+                              <div className="relative">
+                                <button
+                                  onClick={() =>
+                                    setMenuOpen(
+                                      menuOpen === task.id ? null : task.id,
+                                    )
+                                  }
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-secondary rounded-sm"
+                                >
+                                  <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                                </button>
+                                {menuOpen === task.id && (
+                                  <div className="absolute right-0 top-8 z-50 bg-background border border-border/30 rounded-sm shadow-lg min-w-[150px]">
+                                    <button
+                                      onClick={() => handleEditTask(task)}
+                                      className="w-full px-3 py-2 text-left text-sm hover:bg-secondary flex items-center space-x-2"
+                                    >
+                                      <Edit className="w-3 h-3" />
+                                      <span>Edit</span>
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleMoveTask(task.id, "todo")
+                                      }
+                                      className="w-full px-3 py-2 text-left text-sm hover:bg-secondary"
+                                    >
+                                      Move to To Do
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleMoveTask(task.id, "in-progress")
+                                      }
+                                      className="w-full px-3 py-2 text-left text-sm hover:bg-secondary"
+                                    >
+                                      Move to In Progress
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleMoveTask(task.id, "review")
+                                      }
+                                      className="w-full px-3 py-2 text-left text-sm hover:bg-secondary"
+                                    >
+                                      Move to Review
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleMoveTask(task.id, "done")
+                                      }
+                                      className="w-full px-3 py-2 text-left text-sm hover:bg-secondary"
+                                    >
+                                      Move to Done
+                                    </button>
+                                    <div className="border-t border-border/30" />
+                                    <button
+                                      onClick={() => handleDeleteTask(task.id)}
+                                      className="w-full px-3 py-2 text-left text-sm hover:bg-destructive hover:text-destructive-foreground flex items-center space-x-2"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                      <span>Delete</span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
 
-                          {task.description && (
-                            <p className="text-xs text-muted-foreground mb-3">
-                              {task.description}
-                            </p>
-                          )}
+                            {task.description && (
+                              <p className="text-xs text-muted-foreground mb-3">
+                                {task.description}
+                              </p>
+                            )}
 
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <span
-                                className={`text-xs px-2 py-0.5 rounded-sm border ${getPriorityColor(
-                                  task.priority,
-                                )}`}
-                                style={{
-                                  fontFamily: "IBM Plex Mono, monospace",
-                                }}
-                              >
-                                {task.priority.toUpperCase()}
-                              </span>
-                              {task.dueDate && (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
                                 <span
-                                  className="text-xs text-muted-foreground flex items-center space-x-1"
+                                  className={`text-xs px-2 py-0.5 rounded-sm border ${getPriorityColor(
+                                    task.priority,
+                                  )}`}
                                   style={{
                                     fontFamily: "IBM Plex Mono, monospace",
                                   }}
                                 >
-                                  <Clock className="w-3 h-3" />
-                                  <span>{task.dueDate}</span>
+                                  {task.priority.toUpperCase()}
                                 </span>
-                              )}
+                                {task.due_date && (
+                                  <span
+                                    className="text-xs text-muted-foreground flex items-center space-x-1"
+                                    style={{
+                                      fontFamily: "IBM Plex Mono, monospace",
+                                    }}
+                                  >
+                                    <Clock className="w-3 h-3" />
+                                    <span>{formatDate(task.due_date)}</span>
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
 
-                          {task.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-3">
-                              {task.tags.map((tag) => (
-                                <span
-                                  key={tag}
-                                  className="text-xs px-2 py-0.5 bg-secondary border border-border/30 rounded-sm text-muted-foreground"
-                                  style={{
-                                    fontFamily: "IBM Plex Mono, monospace",
-                                  }}
-                                >
-                                  #{tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </motion.div>
-                      ))}
+                            {task.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-3">
+                                {task.tags.map((tag: string) => (
+                                  <span
+                                    key={tag}
+                                    className="text-xs px-2 py-0.5 bg-secondary border border-border/30 rounded-sm text-muted-foreground"
+                                    style={{
+                                      fontFamily: "IBM Plex Mono, monospace",
+                                    }}
+                                  >
+                                    #{tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </motion.div>
+                        ),
+                      )}
                     </div>
                   </motion.div>
                 ),
