@@ -43,7 +43,7 @@ const navItems = [
   // { label: "Calendar", href: "/calendar", icon: Calendar, code: "08" },
   { label: "Profile", href: "/profile", icon: User, code: "09" },
   { label: "Design System", href: "/design", icon: Cpu, code: "10" },
-  { label: "System", href: "/config", icon: Settings, code: "11" },
+  // { label: "System", href: "/config", icon: Settings, code: "11" },
 ];
 
 export default function DashboardShell({ children }: DashboardShellProps) {
