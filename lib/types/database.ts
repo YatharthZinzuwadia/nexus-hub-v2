@@ -131,7 +131,7 @@ export interface Project {
 
   // Tech Stack (stored as JSON)
   tags: string[]; // e.g., ["TypeScript", "React"]
-  tech_stack: any[]; // Flexible JSON array
+  tech_stack: string[]; // e.g., ["React", "Node.js", "PostgreSQL"]
 
   // GitHub Stats
   stars: number;
@@ -252,7 +252,7 @@ export interface AnalyticsEvent {
   id: string;
   user_id: string;
   event_type: AnalyticsEventType;
-  metadata: Record<string, any>; // Flexible JSON
+  metadata: Record<string, unknown>; // Flexible JSON
   resource_type: ResourceType | null;
   resource_id: string | null;
 
@@ -272,9 +272,9 @@ export interface Automation {
   name: string;
   description: string;
   trigger_type: TriggerType;
-  trigger_config: Record<string, any>;
+  trigger_config: Record<string, unknown>;
   action_type: ActionType;
-  action_config: Record<string, any>;
+  action_config: Record<string, unknown>;
   is_active: boolean;
   last_run_at: string | null;
   next_run_at: string | null;
@@ -319,12 +319,18 @@ export type ProjectInsert = Omit<
 /**
  * Data required to create a new task
  */
-export type TaskInsert = Omit<
-  Task,
-  "id" | "created_at" | "updated_at" | "completed_at"
-> & {
+export type TaskInsert = {
   user_id: string; // Required
   title: string; // Required
+  description?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  project_id?: string | null;
+  position?: number;
+  tags?: string[];
+  assigned_to?: string | null;
+  due_date?: string | null;
+  start_date?: string | null;
 };
 
 /**
@@ -418,6 +424,13 @@ export type TaskUpdate = Partial<
  */
 export type FileUpdate = Partial<
   Omit<File, "id" | "user_id" | "uploaded_at" | "created_at" | "updated_at">
+>;
+
+/**
+ * Data allowed when updating a note
+ */
+export type NoteUpdate = Partial<
+  Omit<Note, "id" | "task_id" | "user_id" | "created_at" | "updated_at">
 >;
 
 /**
@@ -545,7 +558,7 @@ export interface AnalyticsMetrics {
 /**
  * Standard API success response
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: true;
   data: T;
   message?: string;
@@ -559,7 +572,7 @@ export interface ApiError {
   error: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
 }
 
